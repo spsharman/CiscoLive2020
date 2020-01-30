@@ -1,0 +1,375 @@
+---
+#
+#                      CISCO SAMPLE CODE LICENSE
+#                             Version 1.1
+#             Copyright (c) 2017 Cisco and/or its affiliates
+#
+# These terms govern this Cisco Systems, Inc. (“Cisco”), example or demo source
+# code and its associated documentation (together, the “Sample Code”). By
+# downloading, copying, modifying, compiling, or redistributing the Sample Code,
+#  you accept and agree to be bound by the following terms and conditions
+#  (the “License”). If you are accepting the License on behalf of an entity, you
+#  represent that you have the authority to do so
+#  (either you or the entity, “you”). Sample Code is not supported by Cisco TAC
+#  and is not tested for quality or performance. This is your only license to the
+#  Sample Code and all rights not expressly granted are reserved.
+#
+# 1. LICENSE GRANT:   Subject to the terms and conditions of this License, Cisco
+#    hereby grants to you a perpetual, worldwide, non-exclusive,
+#    non-transferable, non-sublicensable, royalty-free license to copy and modify
+#    the Sample Code in source code form, and compile and redistribute the Sample
+#    Code in binary/object code or other executable forms, in whole or in part,
+#    solely for use with Cisco products and services. For interpreted languages
+#    like Java and Python, the executable form of the software may include source
+#    code and compilation is not required.
+#
+# 2. CONDITIONS:      You shall not use the Sample Code independent of, or to
+#    replicate or compete with, a Cisco product or service. Cisco products and
+#    services are licensed under their own separate terms and you shall not use
+#    the Sample Code in any way that violates or is inconsistent with those terms
+#    (for more information, please visit: www.cisco.com/go/terms).
+#
+# 3. OWNERSHIP:       Cisco retains sole and exclusive ownership of the Sample Code,
+#    including all intellectual property rights therein, except with respect to
+#    any third-party material that may be used in or by the Sample Code. Any such
+#    third-party material is licensed under its own separate terms
+#    (such as an open source license) and all use must be in full accordance with
+#    the applicable license. This License does not grant you permission to use
+#    any trade names, trademarks, service marks, or product names of Cisco. If
+#    you provide any feedback to Cisco regarding the Sample Code, you agree that
+#    Cisco, its partners, and its customers shall be free to use and incorporate
+#    such feedback into the Sample Code, and Cisco products and services, for any
+#    purpose, and without restriction, payment, or additional consideration of
+#    any kind. If you initiate or participate in any litigation against Cisco,
+#    its partners, or its customers (including cross-claims and counter-claims)
+#    alleging that the Sample Code and/or its use infringe any patent, copyright,
+#    or other intellectual property right, then all rights granted to you under
+#    this License shall terminate immediately without notice.
+#
+# 4. LIMITATION OF LIABILITY: CISCO SHALL HAVE NO LIABILITY IN CONNECTION WITH OR
+#    RELATING TO THIS LICENSE OR USE OF THE SAMPLE CODE, FOR DAMAGES OF ANY KIND,
+#    INCLUDING BUT NOT LIMITED TO DIRECT, INCIDENTAL, AND CONSEQUENTIAL DAMAGES,
+#    OR FOR ANY LOSS OF USE, DATA, INFORMATION, PROFITS, BUSINESS, OR GOODWILL,
+#    HOWEVER CAUSED, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+#
+# 5. DISCLAIMER OF WARRANTY: SAMPLE CODE IS INTENDED FOR EXAMPLE PURPOSES ONLY
+#    AND IS PROVIDED BY CISCO “AS IS” WITH ALL FAULTS AND WITHOUT WARRANTY OR
+#    SUPPORT OF ANY KIND. TO THE MAXIMUM EXTENT PERMITTED BY LAW, ALL EXPRESS AND
+#    IMPLIED CONDITIONS, REPRESENTATIONS, AND WARRANTIES INCLUDING, WITHOUT
+#    LIMITATION, ANY IMPLIED WARRANTY OR CONDITION OF MERCHANTABILITY, FITNESS
+#    FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, SATISFACTORY QUALITY,
+#    NON-INTERFERENCE, AND ACCURACY, ARE HEREBY EXCLUDED AND EXPRESSLY DISCLAIMED
+#    BY CISCO. CISCO DOES NOT WARRANT THAT THE SAMPLE CODE IS SUITABLE FOR
+#    PRODUCTION OR COMMERCIAL USE, WILL OPERATE PROPERLY, IS ACCURATE OR COMPLETE,
+#    OR IS WITHOUT ERROR OR DEFECT.
+#
+# 6. GENERAL:         This License shall be governed by and interpreted in accordance
+#    with the laws of the State of California, excluding its conflict of laws
+#    provisions. You agree to comply with all applicable United States export
+#    laws, rules, and regulations. If any provision of this License is judged
+#    illegal, invalid, or otherwise unenforceable, that provision shall be
+#    severed and the rest of the License shall remain in full force and effect.
+#    No failure by Cisco to enforce any of its rights related to the Sample Code
+#    or to a breach of this License in a particular situation will act as a
+#    waiver of such rights. In the event of any inconsistencies with any other
+#    terms, this License shall take precedence.
+#
+- name:               Get Tenant, App Profile and EPG for host IP address Playbook
+  hosts:              "{{ apic }}"
+  connection:         local
+  gather_facts:       no
+  vars:
+    apic_info:        &apic_info
+      host:           "{{ apic_ip }}"
+      username:       "{{ apic_username }}"
+      password:       "{{ apic_password }}"
+    output_headers  :
+    - 'Tenant  '
+    - 'Contract'
+    - 'Subject '
+    - 'Filter  '
+    debug_on_state:   "{{ debug_on | default(false) }}"
+  vars_prompt:
+    - name:           "host_ip_addr"
+      prompt:         "Enter Host IP Address"
+      private:        no
+  tasks:
+
+  # Retrieve the EPG for the host IP specified in host_ip_addr
+  - name:             Get Host EPG
+    aci_rest:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      method:         get
+      path:           /api/node/class/fvCEp.json?query-target-filter=and(eq(fvCEp.ip,"{{ host_ip_addr }}"))
+    register:         host_epg
+  # Debug:            Value of host_epg
+  - debug:
+      msg: "host_epg: {{ host_epg }}"
+    when:             debug_on_state != False
+
+  # Fail playbook if supplied host IP address doesn't exist on the ACI fabric
+  - name:             End playbook if host IP does not exist
+    fail:
+      msg:            "Host IP address does not exist on the ACI Fabric"
+    when:             host_epg.imdata | length == 0
+
+  # Fail playbook if supplied host IP address exists more than once on the ACI fabric
+  - name:             End playbook if host IP exists in multiple EPGs
+    fail:
+      msg:            "Duplicate host IP addresses exist on the ACI Fabric"
+    when:             host_epg.imdata | length > 1
+
+  # Extract Tenant Name, App Profile and EPG from returned data and save as new facts
+  - name:             Extract DN from host_epg
+    set_fact:
+      host_epg_dn :   "{{ host_epg.imdata[0].fvCEp.attributes.dn }}"
+
+  # Split DN URI into its component parts
+  - name:             Split the DN URI
+    set_fact:
+      host_epg_info : "{{ host_epg_dn.split('/')}} "
+
+  # Trim extraneous text from elements and save as new facts
+  - name:             Create Host facts for Tenant, App Profile and EPG
+    set_fact:
+      host_tn_name :  "{{ host_epg_info[1] | regex_replace('^tn-','') }}"
+      host_ap_name :  "{{ host_epg_info[2] | regex_replace('^ap-','') }}"
+      host_epg_name : "{{ host_epg_info[3] | regex_replace('^epg-','') }}"
+  # Debug:            Display facts set in previous step
+  - debug:
+      msg:
+      - "Host Tenant Name: [{{ host_tn_name }}]"
+      - "Host App Profile Name: [{{ host_ap_name }}]"
+      - "Host EPG Name: [{{ host_epg_name }}]"
+    when:             debug_on_state != False
+
+  # Get the contracts associated with the host EPG
+  - name:             Get Host EPG Contracts
+    aci_rest:
+      <<:             *apic_info
+      validate_certs: no
+      use_proxy:      no
+      method:         get
+      path:           /api/node/mo/uni/tn-{{ host_tn_name }}/ap-{{ host_ap_name }}/epg-{{ host_epg_name }}.json?query-target=subtree&target-subtree-class=fvRsProv&target-subtree-class=fvRsCons
+    register:         host_epg_contracts
+
+  # Create fact for Host EPG provided contracts
+  - name:             Create Fact for Host EPG Provided Contract List
+    set_fact:
+      host_epg_prov_raw:  "{{ host_epg_contracts | json_query('imdata[*].fvRsProv.attributes.tDn') }}"
+
+  # Extract the tenant and provider contract names from the URI list and create a new list with the result.
+  - name:             Extract Tenant and Contract Names from URIs
+    set_fact:
+      host_epg_prov_tidy_raw:  "{{ item | regex_replace('^uni/tn-(.*)/brc-(.*)', '\\1/\\2') }}"
+    with_items:       "{{ host_epg_prov_raw }}"
+    register:         host_epg_prov_tidy_raw_result
+
+  # Create a list of Tenant_name/Contract_name
+  - name:             Create a List of Tenants/Contracts
+    set_fact:
+      host_epg_prov_tidy_final:  "{{ host_epg_prov_tidy_raw_result.results | map(attribute='ansible_facts.host_epg_prov_tidy_raw') | list }}"
+
+  # Split the list by / and register the result
+  - name:             Split the host_epg_prov_tidy_final list by /
+    set_fact:
+      tenant_raw_result:  "{{ item.split('/') }}"
+    with_items:       "{{ host_epg_prov_tidy_final }}"
+    register:         tenant_raw_result_result
+
+  # Create a normalised list of provided contracts
+  - name:             Create the normalised list for provided contracts
+    set_fact:
+      host_epg_prov_contract_list:  "{{ tenant_raw_result_result.results | map(attribute='ansible_facts.tenant_raw_result') | list }}"
+  # Debug:            Print host_epg_prov_contract_list
+  - debug:
+      msg:            "{{ host_epg_prov_contract_list }}"
+    when:             debug_on_state != False
+
+  # Create fact for Host EPG consumed contracts
+  - name:             Create Fact for Host EPG Consumed Contracts
+    set_fact:
+      host_epg_cons_raw:  "{{ host_epg_contracts | json_query('imdata[*].fvRsCons.attributes.tDn') }}"
+
+  # Extract the tenant and consumer contract names from the URI list and create a new list with the result.
+  - name:             Extract Tenant and Contract Names from URIs
+    set_fact:
+      host_epg_cons_tidy_raw:  "{{ item | regex_replace('^uni/tn-(.*)/brc-(.*)', '\\1/\\2') }}"
+    with_items:       "{{ host_epg_cons_raw }}"
+    register:         host_epg_cons_tidy_raw_result
+
+  # Create a list of Tenant_name/Contract_name
+  - name:             Create a List of Tenants/Contracts
+    set_fact:
+      host_epg_cons_tidy_final:  "{{ host_epg_cons_tidy_raw_result.results | map(attribute='ansible_facts.host_epg_cons_tidy_raw') | list }}"
+
+  # Split the list by / and register the result
+  - name:             Split the host_epg_cons_tidy_final list by /
+    set_fact:
+      tenant_cons_raw_result:  "{{ item.split('/') }}"
+    with_items:       "{{ host_epg_cons_tidy_final }}"
+    register:         tenant_cons_raw_result_result
+
+  # Create a normalised list of consumed contracts
+  - name:             Create the normalised list for consumed contracts
+    set_fact:
+      host_epg_cons_contract_list:  "{{ tenant_cons_raw_result_result.results | map(attribute='ansible_facts.tenant_cons_raw_result') | list }}"
+  # Debug: Print host_epg_prov_contract_list
+  - debug:
+      msg:            "{{ host_epg_cons_contract_list }}"
+    when:             debug_on_state != False
+
+  # Get provider contract(s) subjects and filters
+  - name:             Get Provider Contract(s) Subjects and Filters
+    aci_rest:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      method:         get
+      path:           /api/node/mo/uni/tn-{{ item.0 }}/brc-{{ item.1 }}.json?query-target=subtree&target-subtree-class=vzSubj&target-subtree-class=vzRsSubjFiltAtt
+    register:         prov_subj_and_flt
+    with_items:
+    - "{{ host_epg_prov_contract_list }}"
+
+  # Create a list of provider filter DNs
+  - name:  Set Fact with filter DNs
+    set_fact:
+      prov_flt_uni:   "{{ prov_subj_and_flt | json_query('results[*].imdata[*].vzRsSubjFiltAtt.attributes.dn') }}"
+  # Debug: Print prov_flt_uni
+  - debug:
+      msg:            "{{ prov_flt_uni }}"
+    when:             debug_on_state != False
+
+  # Extract Tenant, Contract, Subject and Filter Names from URIs
+  - name:             Extract Tenant, Contract, Subject and Filter Names from URIs
+    set_fact:
+      prov_subj_flt_regex:  "{{ item | regex_replace('^uni/tn-(.*)/brc-(.*)/subj-(.*)/rssubjFiltAtt-(.*)', '\\1/\\2/\\3/\\4') }}"
+    with_items:       "{{ prov_flt_uni }}"
+    register:         prov_subj_flt_regex_result
+
+  # Convert the results of the previous task to a list
+  - name:             Convert values to a list.
+    set_fact:
+      prov_subj_flt_regex_list:  "{{ prov_subj_flt_regex_result.results | map(attribute='ansible_facts.prov_subj_flt_regex') | list }}"
+
+  - name:             Split List into Individual Items
+    set_fact:
+      prov_subj_flt_normalised_list:  "{{ item.split('/') }}"
+    with_items:       "{{ prov_subj_flt_regex_list }}"
+    register:         prov_subj_flt_normalised_list_result
+
+  - name:             Map the Results into a Normalised List
+    set_fact:
+      prov_subj_flt_summary_list:  "{{ prov_subj_flt_normalised_list_result.results | map(attribute='ansible_facts.prov_subj_flt_normalised_list') | list }}"
+
+  - name:             Merge Field Descriptions with List Items
+    set_fact:
+      prov_subj_flt_summary_list_with_headers:  "{{ dict(output_headers | zip( item )) }}"
+    with_items:
+    - "{{ prov_subj_flt_summary_list }}"
+    register:         prov_subj_flt_summary_list_with_headers_result
+
+  - name:             Create new List including Headers
+    set_fact:
+      prov_subj_flt_summary_list_with_headers_list:  "{{ prov_subj_flt_summary_list_with_headers_result.results | map(attribute='ansible_facts.prov_subj_flt_summary_list_with_headers') | list }}"
+  - debug:
+      var:            prov_subj_flt_summary_list_with_headers_list
+    when:             debug_on_state != False
+
+
+
+  # Get consumer contract(s) subjects and filters
+  - name:             Get Consumer Contract(s) Subjects and Filters
+    aci_rest:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      method:         get
+      path:           /api/node/mo/uni/tn-{{ item.0 }}/brc-{{ item.1 }}.json?query-target=subtree&target-subtree-class=vzSubj&target-subtree-class=vzRsSubjFiltAtt
+    register:         cons_subj_and_flt
+    with_items:
+    - "{{ host_epg_cons_contract_list }}"
+
+  # Create a list of consumer filter DNs
+  - name:             Set Fact with filter DNs
+    set_fact:
+      cons_flt_uni:   "{{ cons_subj_and_flt | json_query('results[*].imdata[*].vzRsSubjFiltAtt.attributes.dn') }}"
+  # Debug: Print cons_flt_uni
+  - debug:
+      msg:            "{{ cons_flt_uni }}"
+    when:             debug_on_state != False
+
+  # Extract Tenant, Contract, Subject and Filter Names from URIs
+  - name:             Extract Tenant, Contract, Subject and Filter Names from URIs
+    set_fact:
+      cons_subj_flt_regex:  "{{ item | regex_replace('^uni/tn-(.*)/brc-(.*)/subj-(.*)/rssubjFiltAtt-(.*)', '\\1/\\2/\\3/\\4') }}"
+    with_items:       "{{ cons_flt_uni }}"
+    register:         cons_subj_flt_regex_result
+
+  # Convert the results of the previous task to a list
+  - name:             Convert values to a list.
+    set_fact:
+      cons_subj_flt_regex_list:  "{{ cons_subj_flt_regex_result.results | map(attribute='ansible_facts.cons_subj_flt_regex') | list }}"
+
+  - name:             Split List into Individual Items
+    set_fact:
+      cons_subj_flt_normalised_list: "{{ item.split('/') }}"
+    with_items:       "{{ cons_subj_flt_regex_list }}"
+    register:         cons_subj_flt_normalised_list_result
+
+  - name:             Map the Results into a Normalised List
+    set_fact:
+      cons_subj_flt_summary_list:  "{{ cons_subj_flt_normalised_list_result.results | map(attribute='ansible_facts.cons_subj_flt_normalised_list') | list }}"
+
+  - name:             Merge Field Descriptions with List Items
+    set_fact:
+      cons_subj_flt_summary_list_with_headers:  "{{ dict(output_headers | zip( item )) }}"
+    with_items:
+    - "{{ cons_subj_flt_summary_list }}"
+    register:         cons_subj_flt_summary_list_with_headers_result
+
+  - name:             Create new List including Headers
+    set_fact:
+      cons_subj_flt_summary_list_with_headers_list:  "{{ cons_subj_flt_summary_list_with_headers_result.results | map(attribute='ansible_facts.cons_subj_flt_summary_list_with_headers') | list }}"
+  - debug:
+      var:            cons_subj_flt_summary_list_with_headers_list
+    when:             debug_on_state != False
+
+  # Get all IP addresses associated with our host's EPG
+  - name:             Get all IPs associated with host EPG
+    aci_rest:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      method:         get
+      path:           /api/node/class/fvIp.json?query-target-filter=and(wcard(fvIp.dn,"ap-{{ host_ap_name }}/epg-{{ host_epg_name }}"))&order-by=fvIp.addr
+    register:         host_epg_ip_addresses
+
+  - name:             Set IPs
+    set_fact:
+      ip_addresses_list:  "{{ host_epg_ip_addresses | json_query('imdata[*].fvIp.attributes.addr') }}"
+
+  - debug:
+      msg:            'IP address(s) associated with EPG [{{ host_epg_name}}]: {{ host_epg_ip_addresses | json_query("imdata[*].fvIp.attributes.addr") }}'
+    when:             debug_on_state != False
+
+
+  #
+  # PRINT SUMMARY INFORMATION TO END USER
+  #
+  - name:             Host IP
+    debug:            msg="{{ host_ip_addr }}"
+  - name:             ACI Tenant Name
+    debug:            msg="{{ host_tn_name }}"
+  - name:             ACI Application Profile Name
+    debug:            msg="{{ host_ap_name }}"
+  - name:             EPG to which Host Belongs
+    debug:            msg="{{ host_epg_name }}"
+  - name:             Provided Subjects and Filters
+    debug:            msg="{{ prov_subj_flt_summary_list_with_headers_list }}"
+  - name:             Consumed Subjects and Filters
+    debug:            msg="{{ cons_subj_flt_summary_list_with_headers_list }}"
+  - name:             IP Addresses Associated with host EPG
+    debug:            msg="{{ ip_addresses_list }}"

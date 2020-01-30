@@ -1,0 +1,399 @@
+{
+	"info": {
+		"_postman_id": "04d9cc5e-4e92-462f-aa9b-b4d0dfd01f39",
+		"name": "CiscoLive 2020",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create VLAN Pool",
+			"item": [
+				{
+					"name": "APIC Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "420ac02a-3448-4d74-b8d8-f7d0259e95c8",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"token\", jsonData.imdata[0].aaaLogin.attributes.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"aaaUser\":{\n    \"attributes\":{\n      \"name\":\"{{username}}\",\n      \"pwd\":\"{{password}}\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{apic}}/api/aaaLogin.json",
+							"protocol": "https",
+							"host": [
+								"{{apic}}"
+							],
+							"path": [
+								"api",
+								"aaaLogin.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create VLAN Pools - with variables",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "APIC-cookie={{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fvnsVlanInstP\": {\n    \"attributes\": {\n      \"allocMode\": \"{{allocMode}}\",\n      \"annotation\": \"\",\n      \"descr\": \"{{descr}}\",\n      \"dn\": \"uni/infra/vlanns-[{{poolName}}]-{{allocMode}}\",\n      \"name\": \"{{poolName}}\",\n      \"nameAlias\": \"\",\n      \"ownerKey\": \"\",\n      \"ownerTag\": \"\",\n      \"status\": \"{{status_is}}\"\n    },\n    \"children\": [\n      {\n        \"fvnsEncapBlk\": {\n          \"attributes\": {\n            \"allocMode\": \"{{allocMode}}\",\n            \"annotation\": \"\",\n            \"descr\": \"\",\n            \"from\": \"vlan-{{from}}\",\n            \"name\": \"\",\n            \"nameAlias\": \"\",\n            \"role\": \"external\",\n            \"to\": \"vlan-{{to}}\",\n            \"status\": \"{{status_is}}\"\n          }\n        }\n      }\n    ]\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{apic}}/api/mo/.json?rsp-subtree=modified",
+							"protocol": "https",
+							"host": [
+								"{{apic}}"
+							],
+							"path": [
+								"api",
+								"mo",
+								".json"
+							],
+							"query": [
+								{
+									"key": "rsp-subtree",
+									"value": "modified"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create VLAN Pools - without variables",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "APIC-cookie={{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fvnsVlanInstP\": {\n    \"attributes\": {\n      \"allocMode\": \"static\",\n      \"annotation\": \"\",\n      \"descr\": \"\",\n      \"dn\": \"uni/infra/vlanns-[pool-01]-static\",\n      \"name\": \"pool-01\",\n      \"nameAlias\": \"\",\n      \"ownerKey\": \"\",\n      \"ownerTag\": \"\",\n      \"status\": \"created,modified\"\n    },\n    \"children\": [\n      {\n        \"fvnsEncapBlk\": {\n          \"attributes\": {\n            \"allocMode\": \"static\",\n            \"annotation\": \"\",\n            \"descr\": \"\",\n            \"from\": \"vlan-51\",\n            \"name\": \"\",\n            \"nameAlias\": \"\",\n            \"role\": \"external\",\n            \"to\": \"vlan-99\",\n            \"status\": \"created,modified\"\n          }\n        }\n      }\n    ]\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{apic}}/api/mo/.json?rsp-subtree=modified",
+							"protocol": "https",
+							"host": [
+								"{{apic}}"
+							],
+							"path": [
+								"api",
+								"mo",
+								".json"
+							],
+							"query": [
+								{
+									"key": "rsp-subtree",
+									"value": "modified"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Configure Fault Timers",
+			"item": [
+				{
+					"name": "Fault Timers",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "APIC-cookie={{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"faultLcP\": {\n    \"attributes\": {\n      \"clear\": \"5\",\n      \"code\": \"generic\",\n      \"dn\": \"uni/fabric/monfab-default/flcp-generic\",\n      \"retain\": \"10\",\n      \"soak\": \"5\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{apic}}/api/mo/.json?rsp-subtree=modified",
+							"protocol": "https",
+							"host": [
+								"{{apic}}"
+							],
+							"path": [
+								"api",
+								"mo",
+								".json"
+							],
+							"query": [
+								{
+									"key": "rsp-subtree",
+									"value": "modified"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Target queries",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "420ac02a-3448-4d74-b8d8-f7d0259e95c8",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"token\", jsonData.imdata[0].aaaLogin.attributes.token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"aaaUser\":{\n    \"attributes\":{\n      \"name\":\"{{username}}\",\n      \"pwd\":\"{{password}}\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "https://{{apic}}/api/aaaLogin.json",
+							"protocol": "https",
+							"host": [
+								"{{apic}}"
+							],
+							"path": [
+								"api",
+								"aaaLogin.json"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Class",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{apic}}/api/node/class/fvBD.json?",
+							"protocol": "https",
+							"host": [
+								"{{apic}}"
+							],
+							"path": [
+								"api",
+								"node",
+								"class",
+								"fvBD.json"
+							],
+							"query": [
+								{
+									"key": "query-target",
+									"value": null,
+									"description": "{{ self | children | subtree }}",
+									"disabled": true
+								},
+								{
+									"key": "target-subtree-class",
+									"value": null,
+									"description": "{{ class-name }}",
+									"disabled": true
+								},
+								{
+									"key": "query-target-filter",
+									"value": null,
+									"description": "{{ filter-expression }} e.g  and(wcard(class.attribute,\"object\"))",
+									"disabled": true
+								},
+								{
+									"key": "rsp-subtree",
+									"value": "",
+									"description": "{{ no | children | full }}",
+									"disabled": true
+								},
+								{
+									"key": "rsp-subtree-class",
+									"value": null,
+									"description": "{{ class-name }}",
+									"disabled": true
+								},
+								{
+									"key": "rsp-subtree-filter",
+									"value": null,
+									"description": "{{ filter-expression }}",
+									"disabled": true
+								},
+								{
+									"key": "rsp-subtree-include",
+									"value": null,
+									"description": "{{ faults | health | etc }}",
+									"disabled": true
+								},
+								{
+									"key": "order-by",
+									"value": null,
+									"description": "classname.property {{ asc | desc }}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dn",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{apic}}/api/node/mo/uni/tn-common.json?",
+							"protocol": "https",
+							"host": [
+								"{{apic}}"
+							],
+							"path": [
+								"api",
+								"node",
+								"mo",
+								"uni",
+								"tn-common.json"
+							],
+							"query": [
+								{
+									"key": "query-target",
+									"value": "subtree",
+									"description": "{{ self | children | subtree }}",
+									"disabled": true
+								},
+								{
+									"key": "target-subtree-class",
+									"value": "fvAp",
+									"description": "{{ class-name }}",
+									"disabled": true
+								},
+								{
+									"key": "query-target-filter",
+									"value": null,
+									"description": "{{ filter-expression }} e.g  and(wcard(class.attribute,\"object\"))",
+									"disabled": true
+								},
+								{
+									"key": "rsp-subtree",
+									"value": "full",
+									"description": "{{ no | children | full }}",
+									"disabled": true
+								},
+								{
+									"key": "rsp-subtree-class",
+									"value": null,
+									"description": "{{ class-name }}",
+									"disabled": true
+								},
+								{
+									"key": "rsp-subtree-filter",
+									"value": null,
+									"description": "{{ filter-expression }}",
+									"disabled": true
+								},
+								{
+									"key": "rsp-subtree-include",
+									"value": null,
+									"description": "{{ faults | health | etc }}",
+									"disabled": true
+								},
+								{
+									"key": "order-by",
+									"value": null,
+									"description": "classname.property {{ asc | desc }}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Add interfaces - with variables",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Cookie",
+						"value": "APIC-cookie={{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"infraHPortS\": {\n    \"attributes\": {\n      \"annotation\": \"\",\n      \"descr\": \"\",\n      \"dn\": \"uni/infra/accportprof-{{leaf}}/hports-eth{{port_number}}-typ-range\",\n      \"name\": \"eth{{port_number}}\",\n      \"nameAlias\": \"\",\n      \"ownerKey\": \"\",\n      \"ownerTag\": \"\",\n      \"type\": \"range\",\n      \"status\": \"{{status_is}}\"\n    },\n    \"children\": [\n      {\n        \"infraRsAccBaseGrp\": {\n          \"attributes\": {\n            \"annotation\": \"\",\n            \"fexId\": \"101\",\n            \"tDn\": \"uni/infra/funcprof/accportgrp-{{policy_group}}\"\n          }\n        }\n      },\n      {\n        \"infraPortBlk\": {\n          \"attributes\": {\n            \"annotation\": \"\",\n            \"descr\": \"{{descr}}\",\n            \"fromCard\": \"1\",\n            \"fromPort\": \"{{port_number}}\",\n            \"name\": \"block2\",\n            \"nameAlias\": \"\",\n            \"toCard\": \"1\",\n            \"toPort\": \"{{port_number}}\",\n            \"status\": \"{{status_is}}\"\n          }\n        }\n      }\n    ]\n  }\n}"
+				},
+				"url": {
+					"raw": "https://{{apic}}/api/mo/.json?rsp-subtree=modified",
+					"protocol": "https",
+					"host": [
+						"{{apic}}"
+					],
+					"path": [
+						"api",
+						"mo",
+						".json"
+					],
+					"query": [
+						{
+							"key": "rsp-subtree",
+							"value": "modified"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -1,0 +1,7 @@
+Documentation here:
+
+https://www.terraform.io/docs/providers/aci/index.html
+
+Generate key and cert like this on linux or Mac:
+
+openssl req -new -newkey rsa:1024 -days 36500 -nodes -x509 -keyout admin.key -out admin.crt -subj '/CN=Admin/O=Your Company/C=US'

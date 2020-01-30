@@ -1,0 +1,580 @@
+---
+
+#==============================================================================================
+# Available tags:
+#
+#   snapshot
+#   fault-timers
+#   vlan-pool
+#   cdp-policy
+#   phys-dom
+#   L2-dom
+#   aaep-phys
+#   aaep-L2
+#   intf-policy
+#   intf-profiles
+#   sw-profiles
+#   ports2leafprofile
+#   vpc-leaf-pairs
+#
+#==============================================================================================
+
+- name:                              ACI Fabric Basebuild
+  hosts:                             dcloud_apic
+  connection:                        local
+  gather_facts:                      no
+
+  vars:
+
+#==============================================================================================
+# Create or delete. Comment out as required.
+#==============================================================================================
+    desired_state:
+      status: 'modified,created'
+      #status: deleted
+
+#==============================================================================================
+# APIC access information.
+#==============================================================================================
+    apic_info:        &apic_info
+      host:           <Insert APIC IP here>
+      username:       <Insert APIC username here>
+      password:       <Insert APIC password here>
+      validate_certs: no
+
+    rest_info:        &rest_info
+      use_proxy:      no
+      path:           /api/mo/.json
+      method:         post
+
+#==============================================================================================
+# VLAN Pool(s).
+#==============================================================================================
+    vlan_pool:
+      - { name: "all_vlans", descr: "Created by Ansible", start_vlanid: "2000", end_vlanid: "2501" }
+
+#==============================================================================================
+# CDP Policies.
+#==============================================================================================
+    cdp_policy:
+      - { name: "cdp-enabled", adminSt: "enabled", descr: "Created by Ansible"}
+
+#==============================================================================================
+# Physical Domains.
+#==============================================================================================
+    physical_domain:
+      - { name: "physical_servers", vlan_pool: "all_vlans" }
+
+#==============================================================================================
+# L2 Domains.
+#==============================================================================================
+    L2_domain:
+      - { name: "layer_2_extension", vlan_pool: "all_vlans" }
+
+#==============================================================================================
+# AAEP.
+#==============================================================================================
+    aaep_phys:
+      - { name: "all_vlans", descr: "Created by Ansible", vlan_pool: "all_vlans", physical_domain: "physical_servers" }
+    aaep_L2:
+      - { name: "all_vlans", descr: "Created by Ansible", vlan_pool: "all_vlans", L2_domain: "layer_2_extension" }
+
+#==============================================================================================
+# ESX hosts Interface Policy.
+#==============================================================================================
+    esx_interface_policy:
+      - { name: "ESX_Hosts", descr: "Created by Ansible", aaep: "all_vlans", cdp_policy: "cdp-enabled" }
+
+#==============================================================================================
+# Linux hosts Interface Policy.
+#==============================================================================================
+    linux_interface_policy:
+      - { name: "Linux_Hosts", descr: "Created by Ansible", aaep: "all_vlans", cdp_policy: "cdp-enabled" }
+
+#==============================================================================================
+# Windows hosts Interface Policy.
+#==============================================================================================
+    windows_interface_policy:
+      - { name: "Windows_Hosts", descr: "Created by Ansible", aaep: "all_vlans", cdp_policy: "cdp-enabled" }
+
+#==============================================================================================
+# vPC Interface Policy.
+#==============================================================================================
+    vpc_interface_policy:
+      - { name: "vpc_to_legacy_n7k", descr: "Created by Ansible", aaep: "all_vlans", cdp_policy: "cdp-enabled", lacp_policy: "lacp-active" }
+
+#==============================================================================================
+# Interface Policy Leaf Profiles.
+#==============================================================================================
+    interface_policy_leaf_profiles:
+      - { name: "Leaf_101", descr: "Created by Ansible", status: "created,modified" }
+      - { name: "Leaf_102", descr: "Created by Ansible", status: "created,modified" }
+      - { name: "Leaf_103", descr: "Created by Ansible", status: "created,modified" }
+      - { name: "Leaf_104", descr: "Created by Ansible", status: "created,modified" }
+      - { name: "Leaf_105", descr: "Created by Ansible", status: "created,modified" }
+      - { name: "Leaf_106", descr: "Created by Ansible", status: "created,modified" }
+      - { name: "Leaf_101_and_102", descr: "Created by Ansible", status: "created,modified" }
+      - { name: "Leaf_103_and_104", descr: "Created by Ansible", status: "created,modified" }
+      - { name: "Leaf_105_and_106", descr: "Created by Ansible", status: "created,modified" }
+
+#==============================================================================================
+# Switch Policy Leaf Profiles.
+#==============================================================================================
+    switch_policy_leaf_profiles:
+      - { swPolicyLeafProfileName: "Leaf_101", leafName: "Leaf-101", leafId: "101", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_102", leafName: "Leaf-102", leafId: "102", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_103", leafName: "Leaf-103", leafId: "103", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_104", leafName: "Leaf-104", leafId: "104", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_105", leafName: "Leaf-105", leafId: "105", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_106", leafName: "Leaf-106", leafId: "106", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_101_and_102", leafName: "Leaf-101", leafId: "101", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_101_and_102", leafName: "Leaf-102", leafId: "102", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_103_and_104", leafName: "Leaf-103", leafId: "103", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_103_and_104", leafName: "Leaf-104", leafId: "104", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_105_and_106", leafName: "Leaf-105", leafId: "105", descr: "Created by Ansible" }
+      - { swPolicyLeafProfileName: "Leaf_105_and_106", leafName: "Leaf-106", leafId: "106", descr: "Created by Ansible" }
+
+#==============================================================================================
+# Access Port to Leaf Profiles.
+#==============================================================================================
+    access_port_to_leaf_profile:
+      - { leaf: "Leaf_101", port: "3", descr: "Created by Ansible", policy_group: "ESX_Hosts" }
+      - { leaf: "Leaf_101", port: "4", descr: "Created by Ansible", policy_group: "ESX_Hosts" }
+      - { leaf: "Leaf_101", port: "5", descr: "Created by Ansible", policy_group: "ESX_Hosts" }
+      - { leaf: "Leaf_101", port: "6", descr: "Created by Ansible", policy_group: "ESX_Hosts" }
+      - { leaf: "Leaf_101", port: "7", descr: "Created by Ansible", policy_group: "ESX_Hosts" }
+      - { leaf: "Leaf_101", port: "8", descr: "Created by Ansible", policy_group: "ESX_Hosts" }
+      - { leaf: "Leaf_101", port: "9", descr: "Created by Ansible", policy_group: "ESX_Hosts" }
+      - { leaf: "Leaf_101", port: "10", descr: "Created by Ansible", policy_group: "ESX_Hosts" }
+
+#==============================================================================================
+# VPCs to Leaf Profiles.
+#==============================================================================================
+    portchannel_to_leaf_profile:
+      - { leaf: "Leaf_101_and_102", port: "2", descr: "Created by Ansible", policy_group: "vpc_to_legacy_n7k" }
+
+#==============================================================================================
+# VPC Leaf pairs.
+#==============================================================================================
+    vpc_leaf_pairs:
+      - { name: "Leaf_101_and_102", descr: "Created by Ansible", leaf_id_a: "101", leaf_id_b: "102", vpc_id: "1" }
+      - { name: "Leaf_103_and_104", descr: "Created by Ansible", leaf_id_a: "103", leaf_id_b: "104", vpc_id: "1" }
+      - { name: "Leaf_105_and_106", descr: "Created by Ansible", leaf_id_a: "105", leaf_id_b: "106", vpc_id: "1" }
+
+
+#==============================================================================================
+# Variables complete. Task execution from here.
+#==============================================================================================
+  tasks:
+    - name:             Create an APIC Snapshot
+      aci_config_snapshot:
+        <<: *apic_info
+        state:          present
+        export_policy:  config_backup
+        max_count:      10
+        description:    Snapshot Created by Ansible
+      tags: snapshot
+
+    - name:                          Set Fault Timers
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            faultLcP:
+              attributes:
+                clear: '5'
+                code: generic
+                dn: uni/fabric/monfab-default/flcp-generic
+                retain: '10'
+                soak: '5'
+      tags: fault-timers
+
+    - name:                          Create/Delete VLAN Pool
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            fvnsVlanInstP:
+              attributes:
+                allocMode: static
+                descr: "{{ item.descr }}"
+                dn: "uni/infra/vlanns-[{{ item.name }}]-static"
+                name: "{{ item.name }}"
+                status: "{{ desired_state.status }}"
+              children:
+              - fvnsEncapBlk:
+                  attributes:
+                    allocMode: static
+                    from: "vlan-{{ item.start_vlanid }}"
+                    role: external
+                    to: "vlan-{{ item.end_vlanid }}"
+      with_items:
+        "{{ vlan_pool }}"
+      tags: vlan-pool
+
+    - name:                          Create/Delete CDP Policy
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            cdpIfPol:
+              attributes:
+                adminSt: enabled
+                descr: "{{ item.descr }}"
+                dn: "uni/infra/cdpIfP-{{ item.name }}"
+                name: "{{ item.name }}"
+                status: "{{ desired_state.status }}"
+      with_items:
+        "{{ cdp_policy }}"
+      tags: cdp-policy
+
+    - name:                          Create/Delete Physical Domain
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            physDomP:
+              attributes:
+                dn: "uni/phys-{{ item.name }}"
+                name: "{{ item.name }}"
+                status: "{{ desired_state.status }}"
+              children:
+              - infraRsVlanNs:
+                  attributes:
+                    tDn: "uni/infra/vlanns-[{{ item.vlan_pool }}]-static"
+      with_items:
+        "{{ physical_domain }}"
+      tags: phys-dom
+
+    - name:                          Create/Delete L2 Domain
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            l2extDomP:
+              attributes:
+                annotation: ''
+                dn: "uni/l2dom-{{ item.name }}"
+                name: "{{ item.name }}"
+                status: "{{ desired_state.status }}"
+              children:
+              - infraRsVlanNs:
+                  attributes:
+                    tDn: "uni/infra/vlanns-[{{ item.vlan_pool }}]-static"
+      with_items:
+        "{{ L2_domain }}"
+      tags: L2-dom
+
+    - name:                          Create/Delete AAEP (Physical)
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            infraInfra:
+              attributes:
+                dn: uni/infra
+                status: "created,modified"
+              children:
+              - infraAttEntityP:
+                  attributes:
+                    dn: "uni/infra/attentp-{{ item.vlan_pool }}"
+                    name: "{{ item.name }}"
+                    descr: "{{ item.descr }}"
+                    rn: "attentp-{{ item.name }}"
+                    status: "{{ desired_state.status }}"
+                  children:
+                  - infraProvAcc:
+                      attributes:
+                        dn: "uni/infra/attentp-{{ item.vlan_pool }}/provacc"
+                        status: "{{ desired_state.status }}"
+                  - infraRsDomP:
+                      attributes:
+                        tDn: "uni/phys-{{ item.physical_domain }}"
+                        status: "{{ desired_state.status }}"
+              - infraFuncP:
+                  attributes:
+                    dn: uni/infra/funcprof
+                    status: "created,modified"
+      with_items:
+        "{{ aaep_phys }}"
+      tags: aaep-phys
+
+    - name:                          Create/Delete AAEP (Layer2)
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            infraInfra:
+              attributes:
+                dn: uni/infra
+                status: "created,modified"
+              children:
+              - infraAttEntityP:
+                  attributes:
+                    dn: "uni/infra/attentp-{{ item.vlan_pool }}"
+                    name: "{{ item.name }}"
+                    descr: "{{ item.descr }}"
+                    rn: "attentp-{{ item.name }}"
+                    status: "{{ desired_state.status }}"
+                  children:
+                  - infraProvAcc:
+                      attributes:
+                        dn: "uni/infra/attentp-{{ item.vlan_pool }}/provacc"
+                        status: "{{ desired_state.status }}"
+                  - infraRsDomP:
+                      attributes:
+                        tDn: "uni/l2dom-{{ item.L2_domain }}"
+                        status: "{{ desired_state.status }}"
+              - infraFuncP:
+                  attributes:
+                    dn: uni/infra/funcprof
+                    status: "created,modified"
+      with_items:
+        "{{ aaep_L2 }}"
+      tags: aaep-L2
+
+    - name:                          Create/Delete ESX Host Interface Policy Group
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            infraAccPortGrp:
+              attributes:
+                dn: "uni/infra/funcprof/accportgrp-{{ item.name }}"
+                name: "{{ item.name }}"
+                descr: "{{ item.descr }}"
+                rn: "accportgrp-{{ item.name }}"
+                status: "{{ desired_state.status }}"
+              children:
+              - infraRsAttEntP:
+                  attributes:
+                    tDn: "uni/infra/attentp-{{ item.aaep }}"
+                    status: "{{ desired_state.status }}"
+              - infraRsCdpIfPol:
+                  attributes:
+                    tnCdpIfPolName: "{{ item.cdp_policy }}"
+                    status: "{{ desired_state.status }}"
+      with_items:
+        "{{ esx_interface_policy }}"
+      tags: intf-policy
+
+    - name:                          Create/Delete Linux Host Interface Policy Group
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            infraAccPortGrp:
+              attributes:
+                dn: "uni/infra/funcprof/accportgrp-{{ item.name }}"
+                name: "{{ item.name }}"
+                descr: "{{ item.descr }}"
+                rn: "accportgrp-{{ item.name }}"
+                status: "{{ desired_state.status }}"
+              children:
+              - infraRsAttEntP:
+                  attributes:
+                    tDn: "uni/infra/attentp-{{ item.aaep }}"
+                    status: "{{ desired_state.status }}"
+              - infraRsCdpIfPol:
+                  attributes:
+                    tnCdpIfPolName: "{{ item.cdp_policy }}"
+                    status: "{{ desired_state.status }}"
+      with_items:
+        "{{ linux_interface_policy }}"
+      tags: intf-policy
+
+    - name:                          Create/Delete Windows Host Interface Policy Group
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            infraAccPortGrp:
+              attributes:
+                dn: "uni/infra/funcprof/accportgrp-{{ item.name }}"
+                name: "{{ item.name }}"
+                descr: "{{ item.cdp_policy }}"
+                rn: "accportgrp-{{ item.name }}"
+                status: "{{ desired_state.status }}"
+              children:
+              - infraRsAttEntP:
+                  attributes:
+                    tDn: "uni/infra/attentp-{{ item.aaep }}"
+                    status: "{{ desired_state.status }}"
+              - infraRsCdpIfPol:
+                  attributes:
+                    tnCdpIfPolName: "{{ item.cdp_policy }}"
+                    status: "{{ desired_state.status }}"
+      with_items:
+        "{{ windows_interface_policy }}"
+      tags: intf-policy
+
+    - name:                          Create/Delete vPC Host Interface Policy Group
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            infraAccBndlGrp:
+              attributes:
+                descr: "{{ item.descr }}"
+                dn: "uni/infra/funcprof/accbundle-{{ item.name }}"
+                lagT: 'node'
+                name: "{{ item.name }}"
+                status: "{{ desired_state.status }}"
+              children:
+                - infraRsAttEntP:
+                    attributes:
+                      tDn: "uni/infra/attentp-{{ item.aaep }}"
+                - infraRsCdpIfPol:
+                    attributes:
+                      tnCdpIfPolName: "{{ item.cdp_policy }}"
+                - infraRsLacpPol:
+                    attributes:
+                      tnLacpLagPolName: "{{ item.lacp_policy }}"
+      with_items:
+        "{{ vpc_interface_policy }}"
+      tags: intf-policy
+
+    - name:                          Create/Delete Interface Policy Leaf Profiles
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            infraAccPortP:
+              attributes:
+                descr: "{{ item.descr }}"
+                dn: "uni/infra/accportprof-{{item.name}}"
+                name: "{{ item.name }}"
+                status: "{{ desired_state.status }}"
+      with_items:
+        "{{ interface_policy_leaf_profiles }}"
+      tags: intf-profiles
+
+    - name:                          Create/Delete Switch Policy Leaf Profiles
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            infraNodeP:
+              attributes:
+                descr: "{{ item.descr }}"
+                dn: "uni/infra/nprof-{{ item.swPolicyLeafProfileName }}"
+                name: "{{ item.swPolicyLeafProfileName }}"
+                status: "{{ desired_state.status }}"
+              children:
+              - infraRsAccPortP:
+                  attributes:
+                    tDn: "uni/infra/accportprof-{{ item.swPolicyLeafProfileName }}"
+              - infraLeafS:
+                  attributes:
+                    descr: "{{ item.descr }}"
+                    name: "{{ item.leafName }}"
+                    type: range
+                  children:
+                  - infraNodeBlk:
+                      attributes:
+                        descr: "{{ item.descr }}"
+                        from_: "{{ item.leafId }}"
+                        name: ae13e494071b4fda
+                        to_: "{{ item.leafId }}"
+      with_items:
+        "{{ switch_policy_leaf_profiles }}"
+      tags: sw-profiles
+
+    - name:                          Add/Delete Access Ports to Leaf Profile
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            infraHPortS:
+              attributes:
+                descr: "{{ item.descr }}"
+                dn: "uni/infra/accportprof-{{ item.leaf }}/hports-eth{{ item.port }}-typ-range"
+                name: "eth{{ item.port }}"
+                type: range
+                status: "{{ desired_state.status }}"
+              children:
+              - infraRsAccBaseGrp:
+                  attributes:
+                    fexId: '101'
+                    tDn: "uni/infra/funcprof/accportgrp-{{ item.policy_group }}"
+              - infraPortBlk:
+                  attributes:
+                    descr: "{{ item.descr }}"
+                    fromCard: '1'
+                    fromPort: "{{ item.port }}"
+                    name: block2
+                    toCard: '1'
+                    toPort: "{{ item.port }}"
+                    status: "{{ desired_state.status }}"
+
+      with_items:
+        "{{ access_port_to_leaf_profile }}"
+      tags: ports2leafprofile
+
+    - name:                          Add/Delete Interface Portchannel vPC to Switches
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            infraHPortS:
+              attributes:
+                annotation: ''
+                descr: "{{ item.descr }}"
+                dn: "uni/infra/accportprof-{{ item.leaf }}/hports-eth{{ item.port }}-typ-range"
+                name: "eth{{ item.port }}"
+                type: range
+                status: "{{ desired_state.status }}"
+              children:
+              - infraRsAccBaseGrp:
+                  attributes:
+                    fexId: '101'
+                    tDn: "uni/infra/funcprof/accbundle-{{ item.policy_group }}"
+              - infraPortBlk:
+                  attributes:
+                    descr: "{{ item.descr }}"
+                    fromCard: '1'
+                    fromPort: "{{ item.port }}"
+                    name: block2
+                    toCard: '1'
+                    toPort: "{{ item.port }}"
+                    status: "{{ desired_state.status }}"
+
+      with_items:
+        "{{ portchannel_to_leaf_profile }}"
+      tags: ports2leafprofile
+
+    - name:                                 Create vPC Pairs
+      aci_rest:
+          <<: *apic_info
+          <<: *rest_info
+          content:
+            fabricProtPol:
+              attributes:
+                descr: "{{ item.descr }}"
+                dn: uni/fabric/protpol
+                name: default
+                pairT: explicit
+              children:
+                - fabricExplicitGEp:
+                    attributes:
+                      id: "{{ item.vpc_id }}"
+                      name: "{{ item.name }}"
+                      status: "{{ desired_state.status }}"
+                    children:
+                      - fabricRsVpcInstPol:
+                          attributes:
+                            tnVpcInstPolName: 'default'
+                      - fabricNodePEp:
+                          attributes:
+                            descr: "{{ item.descr }}"
+                            id: "{{ item.leaf_id_a }}"
+                            podId: '1'
+                      - fabricNodePEp:
+                          attributes:
+                            descr: "{{ item.descr }}"
+                            id: "{{ item.leaf_id_b }}"
+                            podId: '1'
+
+      with_items:
+        "{{ vpc_leaf_pairs }}"
+      tags: vpc-leaf-pairs

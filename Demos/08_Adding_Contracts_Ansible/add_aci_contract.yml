@@ -1,0 +1,286 @@
+---
+#
+#                      CISCO SAMPLE CODE LICENSE
+#                             Version 1.1
+#             Copyright (c) 2017 Cisco and/or its affiliates
+#
+# These terms govern this Cisco Systems, Inc. (“Cisco”), example or demo source
+# code and its associated documentation (together, the “Sample Code”). By
+# downloading, copying, modifying, compiling, or redistributing the Sample Code,
+#  you accept and agree to be bound by the following terms and conditions
+#  (the “License”). If you are accepting the License on behalf of an entity, you
+#  represent that you have the authority to do so
+#  (either you or the entity, “you”). Sample Code is not supported by Cisco TAC
+#  and is not tested for quality or performance. This is your only license to the
+#  Sample Code and all rights not expressly granted are reserved.
+#
+# 1. LICENSE GRANT:      Subject to the terms and conditions of this License, Cisco
+#    hereby grants to you a perpetual, worldwide, non-exclusive,
+#    non-transferable, non-sublicensable, royalty-free license to copy and modify
+#    the Sample Code in source code form, and compile and redistribute the Sample
+#    Code in binary/object code or other executable forms, in whole or in part,
+#    solely for use with Cisco products and services. For interpreted languages
+#    like Java and Python, the executable form of the software may include source
+#    code and compilation is not required.
+#
+# 2. CONDITIONS:         You shall not use the Sample Code independent of, or to
+#    replicate or compete with, a Cisco product or service. Cisco products and
+#    services are licensed under their own separate terms and you shall not use
+#    the Sample Code in any way that violates or is inconsistent with those terms
+#    (for more information, please visit: www.cisco.com/go/terms).
+#
+# 3. OWNERSHIP:          Cisco retains sole and exclusive ownership of the Sample Code,
+#    including all intellectual property rights therein, except with respect to
+#    any third-party material that may be used in or by the Sample Code. Any such
+#    third-party material is licensed under its own separate terms
+#    (such as an open source license) and all use must be in full accordance with
+#    the applicable license. This License does not grant you permission to use
+#    any trade names, trademarks, service marks, or product names of Cisco. If
+#    you provide any feedback to Cisco regarding the Sample Code, you agree that
+#    Cisco, its partners, and its customers shall be free to use and incorporate
+#    such feedback into the Sample Code, and Cisco products and services, for any
+#    purpose, and without restriction, payment, or additional consideration of
+#    any kind. If you initiate or participate in any litigation against Cisco,
+#    its partners, or its customers (including cross-claims and counter-claims)
+#    alleging that the Sample Code and/or its use infringe any patent, copyright,
+#    or other intellectual property right, then all rights granted to you under
+#    this License shall terminate immediately without notice.
+#
+# 4. LIMITATION OF LIABILITY: CISCO SHALL HAVE NO LIABILITY IN CONNECTION WITH OR
+#    RELATING TO THIS LICENSE OR USE OF THE SAMPLE CODE, FOR DAMAGES OF ANY KIND,
+#    INCLUDING BUT NOT LIMITED TO DIRECT, INCIDENTAL, AND CONSEQUENTIAL DAMAGES,
+#    OR FOR ANY LOSS OF USE, DATA, INFORMATION, PROFITS, BUSINESS, OR GOODWILL,
+#    HOWEVER CAUSED, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+#
+# 5. DISCLAIMER OF WARRANTY: SAMPLE CODE IS INTENDED FOR EXAMPLE PURPOSES ONLY
+#    AND IS PROVIDED BY CISCO “AS IS” WITH ALL FAULTS AND WITHOUT WARRANTY OR
+#    SUPPORT OF ANY KIND. TO THE MAXIMUM EXTENT PERMITTED BY LAW, ALL EXPRESS AND
+#    IMPLIED CONDITIONS, REPRESENTATIONS, AND WARRANTIES INCLUDING, WITHOUT
+#    LIMITATION, ANY IMPLIED WARRANTY OR CONDITION OF MERCHANTABILITY, FITNESS
+#    FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, SATISFACTORY QUALITY,
+#    NON-INTERFERENCE, AND ACCURACY, ARE HEREBY EXCLUDED AND EXPRESSLY DISCLAIMED
+#    BY CISCO. CISCO DOES NOT WARRANT THAT THE SAMPLE CODE IS SUITABLE FOR
+#    PRODUCTION OR COMMERCIAL USE, WILL OPERATE PROPERLY, IS ACCURATE OR COMPLETE,
+#    OR IS WITHOUT ERROR OR DEFECT.
+#
+# 6. GENERAL:            This License shall be governed by and interpreted in accordance
+#    with the laws of the State of California, excluding its conflict of laws
+#    provisions. You agree to comply with all applicable United States export
+#    laws, rules, and regulations. If any provision of this License is judged
+#    illegal, invalid, or otherwise unenforceable, that provision shall be
+#    severed and the rest of the License shall remain in full force and effect.
+#    No failure by Cisco to enforce any of its rights related to the Sample Code
+#    or to a breach of this License in a particular situation will act as a
+#    waiver of such rights. In the event of any inconsistencies with any other
+#    terms, this License shall take precedence.
+#
+- name:               Initial Setup
+  hosts:              "{{ apic }}"
+  connection:         local
+  gather_facts:       no
+  vars:
+    scope:            "context"
+    apic_info:        &apic_info
+      host:           "{{ apic_ip }}"
+      username:       "{{ apic_username }}"
+      password:       "{{ apic_password }}"
+    debug_on_state:   "{{ debug_on | default(false) }}"
+  vars_prompt:
+    - name:           "src_ip_addr"
+      prompt:         "Enter source IP address"
+      private:        no
+
+    - name:           "dst_ip_addr"
+      prompt:         "Enter destination IP address"
+      private:        no
+
+    - name:           "subj_name"
+      prompt:         "Enter the protocol type (tcp or udp)"
+      private:        no
+
+    - name:           "dst_port"
+      prompt:         "Enter the destination port to be opened"
+      private:        no
+
+  tasks:
+  # Create an ACI snapshot
+  - name:             Create an APIC Snapshot
+    aci_config_snapshot:
+      <<: *apic_info
+      validate_certs: no
+      state:          present
+      export_policy:  config_backup
+      max_count:      10
+      description:    Snapshot Created by Ansible
+
+  # Check that the supplied source IP address is registered on the fabric
+  # and discover its EPG
+  - name:             Get Tenant, App Profile and EPG for Source IP address
+    aci_rest:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      method:         get
+      path:           /api/node/class/fvCEp.json?query-target-filter=and(eq(fvCEp.ip,"{{ src_ip_addr }}"))
+    register:         cons_epg
+
+  # Fail playbook if supplied source IP address doesn't exist on the ACI fabric
+  - name:             End playbook if source IP does not exist
+    fail:
+      msg:            "Source IP address does not exist on the ACI Fabric"
+    when:             cons_epg.imdata | length == 0
+
+  # Extract Tenant, App Profile and EPG from returned data
+  - name:             Extract the DN of the source_epg
+    set_fact:
+      cons_epg_dn :   "{{ cons_epg.imdata[0].fvCEp.attributes.dn }}"
+
+  - name:             Split the cons_epg_dn
+    set_fact:
+      cons_epg_info : "{{ cons_epg_dn.split('/')}} "
+
+  - name:             Set source variables
+    set_fact:
+      cons_tn_name :  "{{ cons_epg_info[1] | regex_replace('^tn-','') }}"
+      cons_ap_name :  "{{ cons_epg_info[2] | regex_replace('^ap-','') }}"
+      cons_epg_name : "{{ cons_epg_info[3] | regex_replace('^epg-','') }}"
+  # Debug: Display facts set in previous step
+  - debug:
+      msg:
+      - "Consumer Tenant Name:      [{{ cons_tn_name }}]"
+      - "Consumer App Profile Name: [{{ cons_ap_name }}]"
+      - "Consumer EPG Name:         [{{ cons_epg_name }}]"
+    when:             debug_on_state != False
+
+  # Check destination IP is registered on the fabric and discover it's EPG
+  - name:             Get Tenant, App Profile and EPG for Destination IP address
+    aci_rest:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      method:         get
+      path:           /api/node/class/fvCEp.json?query-target-filter=and(eq(fvCEp.ip,"{{ dst_ip_addr }}"))
+    register:         prov_epg
+
+  # Fail playbook if supplied destination IP address doesn't exist on the ACI fabric
+  - name:             End playbook if destination IP does not exist
+    fail:
+      msg:            "Destination IP address does not exist on the ACI Fabric"
+    when:             prov_epg.imdata | length == 0
+
+  # Start extracting the destination EPG information
+  - name:             Extract the DN of the destination_epg
+    set_fact:
+      prov_epg_dn:    "{{ prov_epg.imdata[0].fvCEp.attributes.dn }}"
+
+  - name:             Split the prov_epg_dn
+    set_fact:
+      prov_epg_info:  "{{ prov_epg_dn.split('/')}} "
+
+  - name:             Set destination variables
+    set_fact:
+      prov_tn_name:   "{{ prov_epg_info[1] | regex_replace('^tn-','') }}"
+      prov_ap_name:   "{{ prov_epg_info[2] | regex_replace('^ap-','') }}"
+      prov_epg_name:  "{{ prov_epg_info[3] | regex_replace('^epg-','') }}"
+  # Debug: Display facts set in previous step
+  - debug:
+      msg:
+        - "Provider Tenant Name:      [{{ prov_tn_name }}]"
+        - "Provider App Profile Name: [{{ prov_ap_name }}]"
+        - "Provider EPG Name:         [{{ prov_epg_name }}]"
+    when:             debug_on_state != False
+
+  # Create a filter
+  - name:             Create Filter
+    aci_filter:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      tenant:         "common"
+      filter:         "{{ subj_name }}_src_port_any_to_dst_port_{{ dst_port }}"
+      state:          "present"
+    register:         flt
+
+  # Create a new filter entry
+  - name:             Create Filter Entry
+    aci_filter_entry:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      filter:         "{{ subj_name }}_src_port_any_to_dst_port_{{ dst_port }}"
+      entry:          "src_port_any_to_dst_port_{{ dst_port }}"
+      tenant:         "common"
+      ether_type:     "ip"
+      ip_protocol:    "{{ subj_name }}"
+      dst_port:       "{{ dst_port }}"
+      state:          "present"
+    register:         flt_entry
+
+  # Create contract
+  - name:             Create Contract
+    aci_rest:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      path:           /api/node/mo/uni/tn-{{ prov_tn_name }}/brc-{{ prov_ap_name }}:{{ prov_epg_name }}_to_{{ cons_ap_name }}:{{ cons_epg_name }}.json
+      method:         post
+      content:
+        vzBrCP:
+          attributes:
+            name:     "{{ prov_ap_name }}:{{ prov_epg_name }}_to_{{ cons_ap_name }}:{{ cons_epg_name }}"
+            scope:    "{{ scope }}"
+            status:   "created,modified"
+
+  - name:             Define the contract tenant name
+    set_fact:
+      cont_name:      "{{ prov_ap_name }}:{{ prov_epg_name }}_to_{{ cons_ap_name }}:{{ cons_epg_name }}"
+    register:         cont_name
+
+  # Add subject and filter to the contract
+  - name:             Add the subject and filter
+    aci_rest:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      path:           /api/node/mo/uni/tn-{{ prov_tn_name }}/brc-{{ prov_ap_name }}:{{ prov_epg_name }}_to_{{ cons_ap_name }}:{{ cons_epg_name }}/subj-{{ subj_name }}.json
+      method:         post
+      content:
+        vzSubj:
+          attributes:
+            name:     "{{ subj_name }}"
+            status:   "created,modified"
+          children:
+            -
+             vzRsSubjFiltAtt:
+               attributes:
+                 tnVzFilterName: "{{ subj_name }}_src_port_any_to_dst_port_{{ dst_port}}"
+                 status:         "created,modified"
+    register:         subj_and_flt
+
+  # Bind the contract to the source host's EPG
+  - name:             Bind Contract to Source EPG
+    aci_epg_to_contract:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      tenant:         "{{ prov_tn_name }}"
+      ap:             "{{ prov_ap_name }}"
+      epg:            "{{ prov_epg_name }}"
+      contract:       "{{ cont_name }}"
+      contract_type:  provider
+      state:          present
+    register:         prov_epg_contract
+
+  # Bind the contract to the destination host's EPG
+  - name:             Bind Contract to Destination EPG
+    aci_epg_to_contract:
+      <<: *apic_info
+      validate_certs: no
+      use_proxy:      no
+      tenant:         "{{ cons_tn_name }}"
+      ap:             "{{ cons_ap_name }}"
+      epg:            "{{ cons_epg_name }}"
+      contract:       "{{ cont_name }}"
+      contract_type:  consumer
+      state:          present
+    register:         cons_epg_contract

@@ -1,0 +1,3 @@
+﻿allocMode,descr,poolName,from,to,status_is
+static,Added by Postman,pool-01,500,520,"created,modified"
+dynamic,Added by Postman,pool-02,600,620,"created,modified"

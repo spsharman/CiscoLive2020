@@ -1,0 +1,260 @@
+---
+
+#==============================================================================================
+# Available tags:
+#
+#   snapshot
+#   tenants
+#   vrf
+#   bd
+#   gw
+#   ap
+#   epg
+#   domain
+#   static_binding
+#
+#==============================================================================================
+
+- name:                            Tenant Creation
+  hosts:                           dcloud_apic
+  connection:                      local
+  gather_facts:                    no
+
+#==============================================================================================
+# Create or delete. Comment out as required.
+#==============================================================================================
+  vars:
+    desired_state:                 present
+#    desired_state:                absent
+
+#    desired_status:               create,modified
+#    desired_status:               delete"
+
+#==============================================================================================
+# APIC access information.
+#==============================================================================================
+    apic_info:                     &apic_info
+      host:                        198.18.133.200
+      username:                    admin
+      password:                    C1sco12345
+      validate_certs:              no
+
+    rest_info:                     &rest_info
+      use_proxy:                   no
+      path:                        /api/mo/.json
+      method:                      post
+
+#==============================================================================================
+# Tenants.
+#==============================================================================================
+    tenants:
+      - { tenant: "CiscoLive", descr: "Created by Ansible" }
+      - { tenant: "legacy", descr: "Created by Ansible" }
+
+#==============================================================================================
+# VRFs.
+#==============================================================================================
+    vrf:
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible"}
+
+#==============================================================================================
+# Bridge Domains.
+#==============================================================================================
+    bd:
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible", bd: "192.168.2.x_24", state: "present" }
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible", bd: "192.168.3.x_24", state: "present" }
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible", bd: "192.168.4.x_24", state: "present" }
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible", bd: "192.168.5.x_24", state: "present" }
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible", bd: "192.168.6.x_24", state: "present" }
+
+#==============================================================================================
+# Gateways.
+#==============================================================================================
+    gw:
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible", bd: "192.168.2.x_24", gw: "192.168.2.1", mask: "24", state: "present" }
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible", bd: "192.168.3.x_24", gw: "192.168.3.1", mask: "24", state: "present" }
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible", bd: "192.168.4.x_24", gw: "192.168.4.1", mask: "24", state: "present" }
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible", bd: "192.168.5.x_24", gw: "192.168.5.1", mask: "24", state: "present" }
+      - { tenant: "common", vrf: "vrf-01", descr: "Created by Ansible", bd: "192.168.6.x_24", gw: "192.168.6.1", mask: "24", state: "present" }
+
+#==============================================================================================
+# Application Profiles.
+#==============================================================================================
+    ap:
+      - { tenant: "legacy", app_profile: "192.168.2.x_24" }
+      - { tenant: "legacy", app_profile: "192.168.3.x_24" }
+      - { tenant: "legacy", app_profile: "192.168.4.x_24" }
+      - { tenant: "legacy", app_profile: "192.168.5.x_24" }
+      - { tenant: "legacy", app_profile: "192.168.6.x_24" }
+
+#==============================================================================================
+# EPGs.
+#==============================================================================================
+    epg:
+      - { tenant: "legacy", app_profile: "192.168.2.x_24", bd: "192.168.2.x_24", epg: "vlan-2" }
+      - { tenant: "legacy", app_profile: "192.168.3.x_24", bd: "192.168.3.x_24", epg: "vlan-3" }
+      - { tenant: "legacy", app_profile: "192.168.4.x_24", bd: "192.168.4.x_24", epg: "vlan-4" }
+      - { tenant: "legacy", app_profile: "192.168.5.x_24", bd: "192.168.5.x_24", epg: "vlan-5" }
+      - { tenant: "legacy", app_profile: "192.168.6.x_24", bd: "192.168.6.x_24", epg: "vlan-6" }
+
+#==============================================================================================
+# Domains.
+#==============================================================================================
+    domain:
+      - { tenant: "legacy", app_profile: "192.168.2.x_24", epg: "vlan-2", domain_name: "layer_2_extension", domain_type: "l2dom" }
+      - { tenant: "legacy", app_profile: "192.168.3.x_24", epg: "vlan-3", domain_name: "layer_2_extension", domain_type: "l2dom" }
+      - { tenant: "legacy", app_profile: "192.168.4.x_24", epg: "vlan-4", domain_name: "layer_2_extension", domain_type: "l2dom" }
+      - { tenant: "legacy", app_profile: "192.168.5.x_24", epg: "vlan-5", domain_name: "layer_2_extension", domain_type: "l2dom" }
+      - { tenant: "legacy", app_profile: "192.168.6.x_24", epg: "vlan-6", domain_name: "layer_2_extension", domain_type: "l2dom" }
+
+#==============================================================================================
+# Bindings.
+#==============================================================================================
+    static_binding:
+      - { tenant: "legacy", app_profile: "192.168.2.x_24", epg: "vlan-2", leafs: "101-102", path: "vpc_to_legacy_n7k", vlan: "2" }
+      - { tenant: "legacy", app_profile: "192.168.3.x_24", epg: "vlan-3", leafs: "101-102", path: "vpc_to_legacy_n7k", vlan: "3" }
+      - { tenant: "legacy", app_profile: "192.168.4.x_24", epg: "vlan-4", leafs: "101-102", path: "vpc_to_legacy_n7k", vlan: "4" }
+      - { tenant: "legacy", app_profile: "192.168.5.x_24", epg: "vlan-5", leafs: "101-102", path: "vpc_to_legacy_n7k", vlan: "5" }
+      - { tenant: "legacy", app_profile: "192.168.6.x_24", epg: "vlan-6", leafs: "101-102", path: "vpc_to_legacy_n7k", vlan: "6" }
+
+#==============================================================================================
+# Variables complete. Task execution from here.
+#==============================================================================================
+
+  tasks:
+    - name:                        Create an APIC Snapshot
+      aci_config_snapshot:
+        <<:                        *apic_info
+        state:                     present
+        export_policy:             config_backup
+        max_count:                 10
+        description:               Snapshot Created by Ansible
+      tags:
+        - snapshot
+        - demo3
+        - demo4
+
+
+    - name:                        Create Tenant
+      aci_tenant:
+        <<:                        *apic_info
+        tenant:                    "{{ item.tenant }}"
+        description:               "{{ item.descr }}"
+        state:                     "{{ desired_state }}"
+      with_items:
+        - "{{ tenants }}"
+      tags:
+        - tenants
+        - demo3
+
+
+    - name:                        Create VRF
+      aci_vrf:
+        <<:                        *apic_info
+        tenant:                    "{{ item.tenant }}"
+        vrf:                       "{{ item.vrf }}"
+        description:               "{{ item.descr }}"
+        policy_control_preference: enforced
+        state:                     "{{ desired_state }}"
+      with_items:
+        - "{{ vrf }}"
+      tags:
+        - vrf
+        - demo3
+
+
+    - name:                        Create Bridge Domain
+      aci_bd:
+        <<:                        *apic_info
+        tenant:                    "{{ item.tenant }}"
+        vrf:                       "{{ item.vrf }}"
+        bd:                        "{{ item.bd }}"
+        description:               "{{ item.descr }}"
+        state:                     "{{ desired_state }}"
+      with_items:
+        - "{{ bd }}"
+      tags:
+        - bd
+        - demo3
+
+
+    - name:                        Create Bridge Domain Subnet
+      aci_bd_subnet:
+        <<:                        *apic_info
+        tenant:                    "{{ item.tenant }}"
+        bd:                        "{{ item.bd }}"
+        gateway:                   "{{ item.gw }}"
+        mask:                      "{{ item.mask }}"
+        state:                     "{{ desired_state }}"
+      with_items:
+        - "{{ gw }}"
+      tags:
+        - gw
+        - demo3
+
+
+    - name:                        Create Application Profile
+      aci_ap:
+        <<:                        *apic_info
+        tenant:                    "{{ item.tenant }}"
+        ap:                        "{{ item.app_profile }}"
+        description:
+        state:                     "{{ desired_state }}"
+      with_items:
+        - "{{ ap }}"
+      tags:
+        - ap
+        - demo4
+
+
+    - name:                        Create EPG
+      aci_epg:
+        <<:                        *apic_info
+        tenant:                    "{{ item.tenant }}"
+        ap:                        "{{ item.app_profile }}"
+        bd:                        "{{ item.bd }}"
+        epg:                       "{{ item.epg }}"
+        description:
+        state:                     "{{ desired_state }}"
+      with_items:
+        - "{{ epg }}"
+      tags:
+        - epg
+        - demo4
+
+
+    - name:                        Add domain to an EPG
+      aci_epg_to_domain:
+        <<:                        *apic_info
+        tenant:                    "{{ item.tenant }}"
+        ap:                        "{{ item.app_profile }}"
+        epg:                       "{{ item.epg }}"
+        domain:                    "{{ item.domain_name }}"
+        domain_type:               "{{ item.domain_type }}"
+        state:                     "{{ desired_state }}"
+      with_items:
+        - "{{ domain }}"
+      tags:
+        - domain
+        - demo4
+
+
+    - name:                        Deploy Static Path binding for given EPG
+      aci_static_binding_to_epg:
+        <<:                        *apic_info
+        tenant:                    "{{ item.tenant }}"
+        ap:                        "{{ item.app_profile }}"
+        epg:                       "{{ item.epg }}"
+        encap_id:                  "{{ item.vlan }}"
+        deploy_immediacy:          immediate
+        interface_mode:            trunk
+        interface_type:            vpc
+        pod_id:                    1
+        leafs:                     "{{ item.leafs }}"
+        interface:                 "{{ item.path }}"
+        state:                     "{{ desired_state }}"
+      with_items:
+        - "{{ static_binding }}"
+      tags:
+        - static_binding
+        - demo4
