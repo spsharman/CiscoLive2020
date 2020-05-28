@@ -1,0 +1,111 @@
+---
+#==============================================================================================
+# Available tags:
+#
+#   snapshot
+#   fault-timers
+#   switch-profiles
+#   leaf-profiles
+#   pools
+#   physical-domains
+#   L2-domains
+#
+#==============================================================================================
+
+
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                       Define global settings
+  hosts:                      localhost
+  connection:                 local
+  gather_facts:               no
+
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
+  vars_files:
+     - ./vars/apic-details.yaml
+
+  tasks:
+    - name:
+      set_fact:
+        desired_state:
+          status:             'modified,created'
+          #status:            deleted
+
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                   apic details
+      set_fact:
+        apic_info:            &apic_info
+          host:               "{{ apic_info.host }}"
+          username:           "{{ apic_info.username }}"
+          password:           "{{ apic_info.password }}"
+          validate_certs:     no
+
+        rest_info:            &rest_info
+          use_proxy:          no
+          path:               /api/mo/.json
+          method:             post
+  tags:                       always
+
+#==============================================================================================
+# Create Physical Domains
+#==============================================================================================
+- name:                       Configure Physical Domains
+  hosts:                      localhost
+  connection:                 local
+  gather_facts:               no
+
+  vars_files:                 ./vars/physical-and-external-domains.yaml
+
+  tasks:
+    - name:                   Create/Delete Physical Domain
+      aci_rest:
+          <<:                 *apic_info
+          <<:                 *rest_info
+          content:
+            physDomP:
+              attributes:
+                dn:           "uni/phys-{{ item.physDomName }}"
+                name:         "{{ item.physDomName }}"
+                status:       "{{ desired_state.status }}"
+              children:
+              - infraRsVlanNs:
+                  attributes:
+                    tDn:      "uni/infra/vlanns-[{{ item.poolName }}]-[{{ item.poolType }}]"
+      with_items:
+        "{{ physical_and_external_domains_physical_domains }}"
+  tags:                       physical-domains
+
+#==============================================================================================
+# Create External Bridged Domains
+#==============================================================================================
+- name:                       Configure External Bridged Domains
+  hosts:                      localhost
+  connection:                 local
+  gather_facts:               no
+
+  vars_files:                 ./vars/physical-and-external-domains.yaml
+
+  tasks:
+    - name:                   Create/Delete L2 Domain
+      aci_rest:
+          <<:                 *apic_info
+          <<:                 *rest_info
+          content:
+            l2extDomP:
+              attributes:
+                annotation:   ''
+                dn:           "uni/l2dom-{{ item.l2DomName }}"
+                name:         "{{ item.l2DomName }}"
+                status:       "{{ desired_state.status }}"
+              children:
+              - infraRsVlanNs:
+                  attributes:
+                    tDn:      "uni/infra/vlanns-[{{ item.poolName }}]-[{{ item.poolType }}]"
+      with_items:
+        "{{ physical_and_external_domains_external_bridged_domains }}"
+  tags:                       L2-domains

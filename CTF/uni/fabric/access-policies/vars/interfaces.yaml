@@ -1,0 +1,61 @@
+#==============================================================================================
+# Leaf Interface Profiles
+#==============================================================================================
+interfaces_leafInterfaces_profiles:
+- leafName:                                            Leaf-101
+  descr:                                               Created by Ansible
+
+- leafName:                                            Leaf-102
+  descr:                                               Created by Ansible
+
+- leafName:                                            Leaf-101_and_102
+  descr:                                               Created by Ansible
+
+- leafName:                                            Leaf-103
+  descr:                                               Created by Ansible
+
+- leafName:                                            Leaf-104
+  descr:                                               Created by Ansible
+
+- leafName:                                            Leaf-103_and_104
+  descr:                                               Created by Ansible
+
+- leafName:                                            Leaf-105
+  descr:                                               Created by Ansible
+
+- leafName:                                            Leaf-106
+  descr:                                               Created by Ansible
+
+- leafName:                                            Leaf-105_and_106
+  descr:                                               Created by Ansible
+
+#==============================================================================================
+# Leaf Interface Policy Groups
+#==============================================================================================
+interfaces_leafInterfaces_policyGroups_leafAccessPort:
+- accessPolicyGroupName:                               esx-host
+  descr:                                               Created by Ansible
+  policies_interface_cdpInterface:                     cdp-enabled
+  aaepName:                                            all_vlans
+
+- accessPolicyGroupName:                               windows-host
+  descr:                                               Created by Ansible
+  policies_interface_cdpInterface:                     cdp-enabled
+  aaepName:                                            all_vlans
+
+- accessPolicyGroupName:                               linux-host
+  descr:                                               Created by Ansible
+  policies_interface_cdpInterface:                     cdp-enabled
+  aaepName:                                            all_vlans
+
+
+interfaces_leafInterfaces_policyGroups_vpcInterface:
+- vpcPolicyGroupName:                                  vpc-1
+  descr:                                               Created by Ansible
+  policies_interface_cdpInterface:                     cdp-enabled
+  policies_interface_portChannel:                      lacp-active
+  aaepName:                                            all_vlans
+
+#==============================================================================================
+# Overrides
+#==============================================================================================

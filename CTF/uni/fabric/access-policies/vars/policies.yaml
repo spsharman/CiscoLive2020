@@ -1,0 +1,55 @@
+#==============================================================================================
+# Switch Policies
+#==============================================================================================
+policies_switch_virtualPortChannelDefault:
+- leafName:                                "Leaf-101_and_102"
+  leaf_id_a:                               "101"
+  leaf_id_b:                               "102"
+  vpc_id:                                  "1"
+  descr:                                   "Created by Ansible"
+
+- leafName:                                "Leaf-103_and_104"
+  leaf_id_a:                               "103"
+  leaf_id_b:                               "104"
+  vpc_id:                                  "1"
+  descr:                                   "Created by Ansible"
+
+- leafName:                                "Leaf-105_and_106"
+  leaf_id_a:                               "105"
+  leaf_id_b:                               "106"
+  vpc_id:                                  "1"
+  descr:                                   "Created by Ansible"
+
+#==============================================================================================
+# Interface Policies
+#==============================================================================================
+policies_interface_cdpInterface:
+- cdpName:                                 "cdp-enabled"
+  adminSt:                                 "enabled"
+  descr:                                   "Created by Ansible"
+
+policies_interface_portChannel:
+- portChannelName:                         "lacp-active"
+  portChannelMode:                         "active"
+  descr:                                   "Created by Ansible"
+
+#==============================================================================================
+# Global Policies
+#==============================================================================================
+policies_global_aaep_phys:
+- aaepName:                                "all_vlans"
+  descr:                                   "Created by Ansible"
+  domainName:                              "physical_servers"
+
+policies_global_aaep_l2:
+- aaepName:                                "all_vlans"
+  descr:                                   "Created by Ansible"
+  domainName:                              "layer_2_extension"
+
+#==============================================================================================
+# Monitoring Policies
+#==============================================================================================
+
+#==============================================================================================
+# Troubleshooting Policies
+#==============================================================================================

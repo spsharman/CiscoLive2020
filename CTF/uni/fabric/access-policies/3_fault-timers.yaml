@@ -1,0 +1,83 @@
+---
+#==============================================================================================
+# Available tags:
+#
+#   fault-timers
+#
+#==============================================================================================
+
+
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                                       Define global settings
+  hosts:                                      localhost
+  connection:                                 local
+  gather_facts:                               no
+
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
+  vars_files:
+     - ./vars/apic-details.yaml
+
+  tasks:
+    - name:
+      set_fact:
+        desired_state:
+          status:                             'modified,created'
+          #status:                            deleted
+
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                                   apic details
+      set_fact:
+        apic_info:                            &apic_info
+          host:                               "{{ apic_info.host }}"
+          username:                           "{{ apic_info.username }}"
+          password:                           "{{ apic_info.password }}"
+          validate_certs:                     no
+
+        rest_info:                            &rest_info
+          use_proxy:                          no
+          path:                               /api/mo/.json
+          method:                             post
+  tags:                                       always
+
+#==============================================================================================
+# Lower Fault Timers
+#==============================================================================================
+- name:                                       Lower Fault Timers
+  hosts:                                      localhost
+  connection:                                 local
+  gather_facts:                               no
+
+  tasks:
+    - name:                                   Set Default Fault Timers
+      aci_rest:
+          <<:                                 *apic_info
+          <<:                                 *rest_info
+          content:
+            faultLcP:
+              attributes:
+                clear:                        '5'
+                code:                         generic
+                dn:                           uni/fabric/monfab-default/flcp-generic
+                retain:                       '10'
+                soak:                         '5'
+
+    - name:                                   Set Common Policy Fault Timers
+      aci_rest:
+          <<:                                 *apic_info
+          <<:                                 *rest_info
+          content:
+            faultLcP:
+              attributes:
+                clear:                        '5'
+                code:                         generic
+                dn:                           uni/fabric/moncommon/flcp-generic
+                retain:                       '10'
+                soak:                         '5'
+
+  tags:                                       fault-timers

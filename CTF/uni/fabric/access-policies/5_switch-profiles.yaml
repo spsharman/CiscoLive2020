@@ -1,0 +1,124 @@
+---
+#==============================================================================================
+# Available tags:
+#
+#   switch-profiles
+
+#
+#==============================================================================================
+
+
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                                       Define global settings
+  hosts:                                      localhost
+  connection:                                 local
+  gather_facts:                               no
+
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
+  vars_files:
+     - ./vars/apic-details.yaml
+
+  tasks:
+    - name:
+      set_fact:
+        desired_state:
+          status:                             'modified,created'
+          #status:                            deleted
+
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                                   apic details
+      set_fact:
+        apic_info:                            &apic_info
+          host:                               "{{ apic_info.host }}"
+          username:                           "{{ apic_info.username }}"
+          password:                           "{{ apic_info.password }}"
+          validate_certs:                     no
+
+        rest_info:                            &rest_info
+          use_proxy:                          no
+          path:                               /api/mo/.json
+          method:                             post
+  tags:                                       always
+
+#==============================================================================================
+# Configure Access Policies - Switches
+#==============================================================================================
+- name:                                       Configure Switch Profiles and vPC Pairs
+  hosts:                                      localhost
+  connection:                                 local
+  gather_facts:                               no
+
+  vars_files:
+     - ./vars/switches.yaml
+     - ./vars/policies.yaml
+
+  tasks:
+    - name:                                   Create/Delete Switch Profiles
+      aci_rest:
+          <<:                                 *apic_info
+          <<:                                 *rest_info
+          content:
+            infraNodeP:
+              attributes:
+                descr:                        "{{ item.descr }}"
+                dn:                           "uni/infra/nprof-{{ item.leafName }}"
+                name:                         "{{ item.leafName }}"
+                status:                       "{{ desired_state.status }}"
+              children:
+              - infraRsAccPortP:
+                  attributes:
+                    tDn:                      "uni/infra/accportprof-{{ item.leafName }}"
+              - infraLeafS:
+                  attributes:
+                    descr:                    "{{ item.descr }}"
+                    name:                     "{{ item.leafName }}"
+                    type:                     range
+                  children:
+                  - infraNodeBlk:
+                      attributes:
+                        descr:                "{{ item.descr }}"
+                        from_:                "{{ item.fromLeafId }}"
+                        name:                 ae13e494071b4fda
+                        to_:                  "{{ item.toLeafId }}"
+      with_items:
+        "{{ switches_leafSwitches_profiles }}"
+
+    - name:                                   Create/Delete vPC Pairs
+      aci_rest:
+          <<:                                 *apic_info
+          <<:                                 *rest_info
+          content:
+            fabricProtPol:
+              attributes:
+                descr:                        "{{ item.descr }}"
+                dn:                           uni/fabric/protpol
+                name:                         default
+                pairT:                        explicit
+              children:
+                - fabricExplicitGEp:
+                    attributes:
+                      id:                     "{{ item.vpc_id }}"
+                      name:                   "{{ item.leafName }}"
+                      status:                 "{{ desired_state.status }}"
+                    children:
+                      - fabricRsVpcInstPol:
+                          attributes:
+                            tnVpcInstPolName: 'default'
+                      - fabricNodePEp:
+                          attributes:
+                            id:               "{{ item.leaf_id_a }}"
+                            podId:            '1'
+                      - fabricNodePEp:
+                          attributes:
+                            id:               "{{ item.leaf_id_b }}"
+                            podId:            '1'
+
+      with_items:
+        "{{ policies_switch_virtualPortChannelDefault }}"
+  tags:                                       switch-profiles

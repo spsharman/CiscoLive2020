@@ -1,0 +1,91 @@
+---
+#==============================================================================================
+# Available tags:
+#
+#   interface-policies
+#
+#==============================================================================================
+
+
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                     Define global settings
+  hosts:                    localhost
+  connection:               local
+  gather_facts:             no
+
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
+  vars_files:
+     - ./vars/apic-details.yaml
+
+  tasks:
+    - name:
+      set_fact:
+        desired_state:
+          status:           'modified,created'
+          #status:          deleted
+
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                 apic details
+      set_fact:
+        apic_info:          &apic_info
+          host:             "{{ apic_info.host }}"
+          username:         "{{ apic_info.username }}"
+          password:         "{{ apic_info.password }}"
+          validate_certs:   no
+
+        rest_info:          &rest_info
+          use_proxy:        no
+          path:             /api/mo/.json
+          method:           post
+  tags:                     always
+
+#==============================================================================================
+# Create Interface Policies
+#==============================================================================================
+- name:                     Configure Interface Policies
+  hosts:                    localhost
+  connection:               local
+  gather_facts:             no
+
+  vars_files:
+     - ./vars/policies.yaml
+
+  tasks:
+      - name:               Create/Delete CDP Policy
+        aci_rest:
+            <<:             *apic_info
+            <<:             *rest_info
+            content:
+              cdpIfPol:
+                attributes:
+                  adminSt:  "{{ item.adminSt }}"
+                  descr:    "{{ item.descr }}"
+                  dn:       "uni/infra/cdpIfP-{{ item.cdpName }}"
+                  name:     "{{ item.cdpName }}"
+                  status:   "{{ desired_state.status }}"
+        with_items:
+          "{{ policies_interface_cdpInterface }}"
+
+
+      - name:               Create/Delete LACP Policy
+        aci_rest:
+            <<:             *apic_info
+            <<:             *rest_info
+            content:
+              lacpLagPol:
+                attributes:
+                  descr:    "{{ item.descr }}"
+                  dn:       "uni/infra/lacplagp-{{ item.portChannelName }}"
+                  name:     "{{ item.portChannelName }}"
+                  mode:     "{{ item.portChannelMode}}"
+                  status:   "{{ desired_state.status }}"
+        with_items:
+          "{{ policies_interface_portChannel }}"
+
+  tags:                     interface-policies

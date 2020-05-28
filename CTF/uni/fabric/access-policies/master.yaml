@@ -1,0 +1,11 @@
+---
+# - import_playbook: 1_apic-logon.yaml
+- import_playbook: 2_snapshot.yaml
+- import_playbook: 3_fault-timers.yaml
+- import_playbook: 4_leaf-profiles.yaml
+- import_playbook: 5_switch-profiles.yaml
+- import_playbook: 6_pools.yaml
+- import_playbook: 7_domains.yaml
+- import_playbook: 8_aaep.yaml
+- import_playbook: 9_interface_policies.yaml
+- import_playbook: 10_interface_policy_groups.yaml

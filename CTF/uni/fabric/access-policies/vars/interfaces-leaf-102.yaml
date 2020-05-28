@@ -1,0 +1,295 @@
+#==============================================================================================
+# Leaf Interfaces
+#
+# status=modified,created
+# status=deleted
+#
+#==============================================================================================
+interfaces_leafInterfaces_profiles_102_ports:
+- port:                                       "1"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "2"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "3"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "4"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "5"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "6"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "7"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "8"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "9"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "10"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "11"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "12"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "13"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "14"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "15"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "16"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "17"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "18"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "19"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "20"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "21"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "22"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "23"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "24"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "25"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "26"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "27"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "28"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "29"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "30"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "31"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "32"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "33"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "34"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "35"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "36"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "37"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "38"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "39"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "40"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "41"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "42"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "43"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "44"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "45"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "46"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "47"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted
+
+- port:                                       "48"
+  leafName:                                   Leaf-102
+  descr:                                      Created by Ansible
+  PolicyGroupName:                            esx-host
+  status:                                     deleted

@@ -1,0 +1,103 @@
+#==============================================================================================
+# Leaf Interfaces
+#
+# status=modified,created
+# status=deleted
+#
+#==============================================================================================
+interfaces_leafInterfaces_profiles_101_and_102_ports:
+- port:                                       "1"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      esx-01
+  PolicyGroupName:                            esx-host
+  status:                                     created,modified
+
+- port:                                       "2"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      esx-02
+  PolicyGroupName:                            esx-host
+  status:                                     created,modified
+
+- port:                                       "3"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      esx-03
+  PolicyGroupName:                            esx-host
+  status:                                     created,modified
+
+- port:                                       "4"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      esx-04
+  PolicyGroupName:                            esx-host
+  status:                                     created,modified
+
+- port:                                       "5"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      esx-05
+  PolicyGroupName:                            esx-host
+  status:                                     created,modified
+
+- port:                                       "6"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      esx-06
+  PolicyGroupName:                            esx-host
+  status:                                     created,modified
+
+- port:                                       "7"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      esx-07
+  PolicyGroupName:                            esx-host
+  status:                                     created,modified
+
+- port:                                       "8"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      esx-08
+  PolicyGroupName:                            esx-host
+  status:                                     created,modified
+
+- port:                                       "9"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      esx-09
+  PolicyGroupName:                            esx-host
+  status:                                     created,modified
+
+- port:                                       "10"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      esx-10
+  PolicyGroupName:                            esx-host
+  status:                                     created,modified
+
+- port:                                       "11"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      windows-01
+  PolicyGroupName:                            windows-host
+  status:                                     created,modified
+
+- port:                                       "12"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      windows-02
+  PolicyGroupName:                            windows-host
+  status:                                     created,modified
+
+- port:                                       "13"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      windows-03
+  PolicyGroupName:                            windows-host
+  status:                                     created,modified
+
+- port:                                       "14"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      linux-01
+  PolicyGroupName:                            linux-host
+  status:                                     created,modified
+
+- port:                                       "15"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      linux-02
+  PolicyGroupName:                            linux-host
+  status:                                     created,modified
+
+- port:                                       "16"
+  leafName:                                   Leaf-101_and_102
+  descr:                                      linux-03
+  PolicyGroupName:                            linux-host
+  status:                                     created,modified
