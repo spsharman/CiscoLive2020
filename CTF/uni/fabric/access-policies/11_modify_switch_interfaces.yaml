@@ -20,7 +20,7 @@
 # Set local and global variables
 #==============================================================================================
   vars_files:
-     - ./vars/apic-details.yaml
+     - ../../global-vars/apic-details.yaml
 
   tasks:
 #    - name:
