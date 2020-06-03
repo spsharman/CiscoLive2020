@@ -1,0 +1,105 @@
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                                 Define global settings
+  hosts:                                localhost
+  connection:                           local
+  gather_facts:                         no
+
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
+  vars_files:
+     - ./global-vars/apic-details.yaml
+
+  tasks:
+    - name:
+      set_fact:
+        desired_state:
+          status:                       'modified,created'
+          #status:                      deleted
+
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                             apic details
+      set_fact:
+        apic_info:                      &apic_info
+          host:                         "{{ apic_info.host }}"
+          username:                     "{{ apic_info.username }}"
+          password:                     "{{ apic_info.password }}"
+          validate_certs:               no
+
+        rest_info:                      &rest_info
+          use_proxy:                    no
+          path:                         /api/mo/.json
+          method:                       post
+  tags:                                 always
+
+#==============================================================================================
+# Create/Delete BGP Route Reflector Addresses
+#==============================================================================================
+- name:                                 Configure BGP Route Reflector Addresses
+  hosts:                                localhost
+  connection:                           local
+  gather_facts:                         no
+
+  vars_files:                           ./global-vars/bgp.yaml
+
+  tasks:
+    - name:                             Create/Delete BGP Route Reflector Addresses
+      aci_rest:
+          <<:                           *apic_info
+          <<:                           *rest_info
+          content:
+            bgpInstPol:
+              attributes:
+                annotation:             ''
+                descr:                  ''
+                dn:                     uni/fabric/bgpInstP-default
+                name:                   default
+                nameAlias:              ''
+                ownerKey:               ''
+                ownerTag:               ''
+                status:                 "{{desired_state.status}}"
+              children:
+                - bgpRRP:
+                    attributes:
+                      annotation:       ''
+                      descr:            ''
+                      name:             ''
+                      nameAlias:        ''
+                    children:
+                      - bgpRRNodePEp:
+                          attributes:
+                            annotation: ''
+                            descr:      ''
+                            id:         '{{item.nodeId}}'
+                            nameAlias:  ''
+                            podId:      '{{item.podId}}'
+                            status:     "{{desired_state.status}}"
+                      - bgpRRNodePEp:
+                          attributes:
+                            annotation: ''
+                            descr:      ''
+                            id:         '{{item.nodeId}}'
+                            nameAlias:  ''
+                            podId:      '{{item.podId}}'
+                            status:     "{{desired_state.status}}"
+                - bgpExtRRP:
+                    attributes:
+                      annotation:       ''
+                      descr:            ''
+                      name:             ''
+                      nameAlias:        ''
+                - bgpAsP:
+                    attributes:
+                      annotation:       ''
+                      asn:              '{{item.asn}}'
+                      descr:            ''
+                      name:             ''
+                      nameAlias:        ''
+                      status:           "{{desired_state.status}}"
+      with_items:
+        "{{bgpRRNodePEp}}"
+#tags:

@@ -6,14 +6,15 @@
 #
 #==============================================================================================
 
+- import_playbook:                 ../../../snapshot.yaml
 
 #==============================================================================================
 # Global Configuration
 #==============================================================================================
-- name:                        Define global settings
-  hosts:                       localhost
-  connection:                  local
-  gather_facts:                no
+- name:                            Define global settings
+  hosts:                           localhost
+  connection:                      local
+  gather_facts:                    no
 
 #==============================================================================================
 # Set local and global variables
@@ -24,40 +25,36 @@
   tasks:
     - name:
       set_fact:
-        rest_desired_state:
-          status:              'modified,created'
-          #status:             deleted
-
-        module_desired_state:  present
-    #    desired_state:        absent
+        desired_state:             present
+    #    desired_state:            absent
 
 #==============================================================================================
 # APIC access information
 #==============================================================================================
-    - name:                    apic details
+    - name:                        apic details
       set_fact:
-        apic_info:             &apic_info
-          host:                "{{ apic_info.host }}"
-          username:            "{{ apic_info.username }}"
-          password:            "{{ apic_info.password }}"
-          validate_certs:      no
+        apic_info:                 &apic_info
+          host:                    "{{ apic_info.host }}"
+          username:                "{{ apic_info.username }}"
+          password:                "{{ apic_info.password }}"
+          validate_certs:          no
 
-        rest_info:             &rest_info
-          use_proxy:           no
-          path:                /api/mo/.json
-          method:              post
-  tags:                        always
+        rest_info:                 &rest_info
+          use_proxy:               no
+          path:                    /api/mo/.json
+          method:                  post
+  tags:                            always
 
 #==============================================================================================
 # Create Bridge Domain and Gateway
 #==============================================================================================
-- name:                        Create VRF
-  hosts:                       localhost
-  connection:                  local
-  gather_facts:                no
+- name:                            Create VRF
+  hosts:                           localhost
+  connection:                      local
+  gather_facts:                    no
 
   vars_files:
-     - ./vars/vrfs.yaml
+     - ./vars/vrf-vars.yaml
 
   tasks:
     - name:                        Create VRF
@@ -67,7 +64,7 @@
         vrf:                       "{{ item.vrf }}"
         description:               "{{ item.descr }}"
         policy_control_preference: enforced
-        state:                     "{{ module_desired_state }}"
+        state:                     "{{ desired_state }}"
       with_items:
         - "{{ vrf }}"
   tags:

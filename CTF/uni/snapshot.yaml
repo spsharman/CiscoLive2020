@@ -2,10 +2,9 @@
 #==============================================================================================
 # Available tags:
 #
-#   fault-timers
+#   snapshot
 #
 #==============================================================================================
-
 
 #==============================================================================================
 # Global Configuration
@@ -19,15 +18,9 @@
 # Set local and global variables
 #==============================================================================================
   vars_files:
-     - ../../global-vars/apic-details.yaml
+     - ./global-vars/apic-details.yaml
 
   tasks:
-    - name:
-      set_fact:
-        desired_state:
-          status:                             'modified,created'
-          #status:                            deleted
-
 #==============================================================================================
 # APIC access information
 #==============================================================================================
@@ -46,38 +39,19 @@
   tags:                                       always
 
 #==============================================================================================
-# Lower Fault Timers
+# Take a configuration snapshot
 #==============================================================================================
-- name:                                       Lower Fault Timers
+- name:                                       Create an APIC Snapshot
   hosts:                                      localhost
   connection:                                 local
   gather_facts:                               no
 
   tasks:
-    - name:                                   Set Default Fault Timers
-      aci_rest:
-          <<:                                 *apic_info
-          <<:                                 *rest_info
-          content:
-            faultLcP:
-              attributes:
-                clear:                        '5'
-                code:                         generic
-                dn:                           uni/fabric/monfab-default/flcp-generic
-                retain:                       '10'
-                soak:                         '5'
-
-    - name:                                   Set Common Policy Fault Timers
-      aci_rest:
-          <<:                                 *apic_info
-          <<:                                 *rest_info
-          content:
-            faultLcP:
-              attributes:
-                clear:                        '5'
-                code:                         generic
-                dn:                           uni/fabric/moncommon/flcp-generic
-                retain:                       '10'
-                soak:                         '5'
-
-  tags:                                       fault-timers
+    - name:                                   Create an APIC Snapshot
+      aci_config_snapshot:
+        <<:                                   *apic_info
+        state:                                present
+        export_policy:                        config_backup
+        max_count:                            10
+        description:                          Snapshot Created by Ansible
+  tags:                                       snapshot

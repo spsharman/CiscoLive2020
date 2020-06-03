@@ -7,6 +7,7 @@
 #
 #==============================================================================================
 
+- import_playbook:        ../../snapshot.yaml
 
 #==============================================================================================
 # Global Configuration
@@ -23,11 +24,6 @@
      - ../../global-vars/apic-details.yaml
 
   tasks:
-#    - name:
-#      set_fact:
-#        desired_state:
-#          status:             'modified,created'
-#          status:             deleted
 
 #==============================================================================================
 # APIC access information
@@ -55,9 +51,9 @@
   gather_facts:               no
 
   vars_files:
-#     - ./vars/interfaces-leaf-101.yaml
-#     - ./vars/interfaces-leaf-102.yaml
-     - ./vars/interfaces-leaf-101_and_102.yaml
+#     - ./vars/interfaces-leaf-101-vars.yaml
+#     - ./vars/interfaces-leaf-102-vars.yaml
+     - ./vars/interfaces-leaf-101_and_102-vars.yaml
 
   tasks:
     - name:                   Configure switch interfaces

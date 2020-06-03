@@ -1,0 +1,189 @@
+#==============================================================================================
+# Application Profiles.
+#==============================================================================================
+ap:
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+
+#==============================================================================================
+# EPGs.
+#==============================================================================================
+epg:
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  bd:             "10.193.x.x"
+  epg:            "host-mgmt"
+
+#==============================================================================================
+# Domains.
+#==============================================================================================
+domain:
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  domain_name:    "physical_servers"
+  domain_type:    "phys"
+
+#==============================================================================================
+# Bindings.
+#==============================================================================================
+static_binding:
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/1"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/2"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/3"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/4"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/5"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/6"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/7"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/8"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/9"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/10"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/1"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/2"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/3"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/4"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/5"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/6"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/7"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/8"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/9"
+  vlan:           "2001"
+
+- tenant:         "vmware"
+  app_profile:    "esx-infra"
+  epg:            "host-mgmt"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/10"
+  vlan:           "2001"

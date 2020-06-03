@@ -12,6 +12,7 @@
 #
 #==============================================================================================
 
+- import_playbook:            ../../snapshot.yaml
 
 #==============================================================================================
 # Global Configuration
@@ -59,7 +60,7 @@
   connection:                 local
   gather_facts:               no
 
-  vars_files:                 ./vars/physical-and-external-domains.yaml
+  vars_files:                 ./vars/physical-and-external-domains-vars.yaml
 
   tasks:
     - name:                   Create/Delete Physical Domain
@@ -88,7 +89,7 @@
   connection:                 local
   gather_facts:               no
 
-  vars_files:                 ./vars/physical-and-external-domains.yaml
+  vars_files:                 ./vars/physical-and-external-domains-vars.yaml
 
   tasks:
     - name:                   Create/Delete L2 Domain

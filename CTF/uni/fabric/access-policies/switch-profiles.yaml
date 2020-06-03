@@ -3,10 +3,10 @@
 # Available tags:
 #
 #   switch-profiles
-
 #
 #==============================================================================================
 
+- import_playbook:        ../../snapshot.yaml
 
 #==============================================================================================
 # Global Configuration
@@ -55,8 +55,8 @@
   gather_facts:                               no
 
   vars_files:
-     - ./vars/switches.yaml
-     - ./vars/policies.yaml
+     - ./vars/switches-vars.yaml
+     - ./vars/policies-vars.yaml
 
   tasks:
     - name:                                   Create/Delete Switch Profiles

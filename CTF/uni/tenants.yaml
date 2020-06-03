@@ -6,14 +6,15 @@
 #
 #==============================================================================================
 
+- import_playbook:        ./snapshot.yaml
 
 #==============================================================================================
 # Global Configuration
 #==============================================================================================
-- name:                        Define global settings
-  hosts:                       localhost
-  connection:                  local
-  gather_facts:                no
+- name:                   Define global settings
+  hosts:                  localhost
+  connection:             local
+  gather_facts:           no
 
 #==============================================================================================
 # Set local and global variables
@@ -24,48 +25,44 @@
   tasks:
     - name:
       set_fact:
-        rest_desired_state:
-          status:              'modified,created'
-          #status:             deleted
-
-        module_desired_state:  present
-    #    desired_state:        absent
+        desired_state:    present
+    #    desired_state:   absent
 
 #==============================================================================================
 # APIC access information
 #==============================================================================================
-    - name:                    apic details
+    - name:               apic details
       set_fact:
-        apic_info:             &apic_info
-          host:                "{{ apic_info.host }}"
-          username:            "{{ apic_info.username }}"
-          password:            "{{ apic_info.password }}"
-          validate_certs:      no
+        apic_info:        &apic_info
+          host:           "{{ apic_info.host }}"
+          username:       "{{ apic_info.username }}"
+          password:       "{{ apic_info.password }}"
+          validate_certs: no
 
-        rest_info:             &rest_info
-          use_proxy:           no
-          path:                /api/mo/.json
-          method:              post
-  tags:                        always
+        rest_info:        &rest_info
+          use_proxy:      no
+          path:           /api/mo/.json
+          method:         post
+  tags:                   always
 
 #==============================================================================================
 # Tenants
 #==============================================================================================
-- name:                        Create Tenant
-  hosts:                       localhost
-  connection:                  local
-  gather_facts:                no
+- name:                   Create Tenant
+  hosts:                  localhost
+  connection:             local
+  gather_facts:           no
 
   vars_files:
      - ./global-vars/tenants.yaml
 
   tasks:
-    - name:                        Create Tenant
+    - name:               Create Tenant
       aci_tenant:
-        <<:                        *apic_info
-        tenant:                    "{{ item.tenant }}"
-        description:               "{{ item.descr }}"
-        state:                     "{{ module_desired_state }}"
+        <<:               *apic_info
+        tenant:           "{{ item.tenant }}"
+        description:      "{{ item.descr }}"
+        state:            "{{ desired_state }}"
       with_items:
         - "{{ tenants }}"
   tags:

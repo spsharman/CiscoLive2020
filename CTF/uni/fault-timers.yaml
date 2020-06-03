@@ -2,6 +2,7 @@
 #==============================================================================================
 # Available tags:
 #
+#   fault-timers
 #
 #==============================================================================================
 
@@ -18,7 +19,7 @@
 # Set local and global variables
 #==============================================================================================
   vars_files:
-     - ./vars/apic-details.yaml
+     - ./global-vars/apic-details.yaml
 
   tasks:
     - name:
@@ -43,3 +44,40 @@
           path:                               /api/mo/.json
           method:                             post
   tags:                                       always
+
+#==============================================================================================
+# Lower Fault Timers
+#==============================================================================================
+- name:                                       Lower Fault Timers
+  hosts:                                      localhost
+  connection:                                 local
+  gather_facts:                               no
+
+  tasks:
+    - name:                                   Set Default Fault Timers
+      aci_rest:
+          <<:                                 *apic_info
+          <<:                                 *rest_info
+          content:
+            faultLcP:
+              attributes:
+                clear:                        '5'
+                code:                         generic
+                dn:                           uni/fabric/monfab-default/flcp-generic
+                retain:                       '10'
+                soak:                         '5'
+
+    - name:                                   Set Common Policy Fault Timers
+      aci_rest:
+          <<:                                 *apic_info
+          <<:                                 *rest_info
+          content:
+            faultLcP:
+              attributes:
+                clear:                        '5'
+                code:                         generic
+                dn:                           uni/fabric/moncommon/flcp-generic
+                retain:                       '10'
+                soak:                         '5'
+
+  tags:                                       fault-timers

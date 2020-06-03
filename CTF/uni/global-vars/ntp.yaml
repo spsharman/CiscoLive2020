@@ -1,9 +1,9 @@
 #==============================================================================================
-# Add Tenant names and descriptions
+# Add NTP servers
+#
+# Example:
+#  - ntpServer:     "198.18.133.1"
+#
 #==============================================================================================
-tenants:
-  - tenant: "ctf"
-    descr:  "Created by Ansible"
-
-  - tenant: "vmware"
-    descr:  "Created by Ansible"
+datetimeNtpProv:
+- ntpServer:          "198.18.133.1"

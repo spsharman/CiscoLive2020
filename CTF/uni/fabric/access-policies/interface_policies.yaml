@@ -6,6 +6,7 @@
 #
 #==============================================================================================
 
+- import_playbook:          ../../snapshot.yaml
 
 #==============================================================================================
 # Global Configuration
@@ -54,7 +55,7 @@
   gather_facts:             no
 
   vars_files:
-     - ./vars/policies.yaml
+     - ./vars/policies-vars.yaml
 
   tasks:
       - name:               Create/Delete CDP Policy
