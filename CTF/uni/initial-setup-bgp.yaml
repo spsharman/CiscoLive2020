@@ -61,7 +61,6 @@
                 nameAlias:              ''
                 ownerKey:               ''
                 ownerTag:               ''
-                status:                 "{{desired_state.status}}"
               children:
                 - bgpRRP:
                     attributes:
@@ -74,18 +73,16 @@
                           attributes:
                             annotation: ''
                             descr:      ''
-                            id:         '{{item.nodeId}}'
+                            id:         '201'
                             nameAlias:  ''
-                            podId:      '{{item.podId}}'
-                            status:     "{{desired_state.status}}"
+                            podId:      '1'
                       - bgpRRNodePEp:
                           attributes:
                             annotation: ''
                             descr:      ''
-                            id:         '{{item.nodeId}}'
+                            id:         '202'
                             nameAlias:  ''
-                            podId:      '{{item.podId}}'
-                            status:     "{{desired_state.status}}"
+                            podId:      '1'
                 - bgpExtRRP:
                     attributes:
                       annotation:       ''
@@ -95,11 +92,12 @@
                 - bgpAsP:
                     attributes:
                       annotation:       ''
-                      asn:              '{{item.asn}}'
+                      asn:              '65000'
                       descr:            ''
                       name:             ''
                       nameAlias:        ''
-                      status:           "{{desired_state.status}}"
-      with_items:
-        "{{bgpRRNodePEp}}"
+
+
+#      with_items:
+#        "{{bgpRRNodePEp}}"
 #tags:

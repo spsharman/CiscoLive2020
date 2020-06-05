@@ -20,17 +20,16 @@
   vars_files:
      - ../../global-vars/apic-details.yaml
 
-#  tasks:
-#    - name:
-#      set_fact:
-#        desired_state:
-#          status:        'modified,created'
-#          status:        deleted
+  tasks:
+    - name:
+      set_fact:
+        desired_state:    present
+    #    desired_state:   absent
 
 #==============================================================================================
 # APIC access information
 #==============================================================================================
-  tasks:
+#  tasks:
     - name:               apic details
       set_fact:
         apic_info:        &apic_info
@@ -60,7 +59,7 @@
         serial:           TEP-1-101
         node_id:          101
         switch:           Leaf-101
-        state:            absent
+        state:            "{{ desired_state }}"
 
     - name:               Add Leaf-102
       aci_fabric_node:
@@ -68,20 +67,20 @@
         serial:           TEP-1-102
         node_id:          102
         switch:           Leaf-102
-        state:            absent
+        state:            "{{ desired_state }}"
 
     - name:               Add Spine-201
       aci_fabric_node:
         <<:               *apic_info
         serial:           TEP-1-103
-        node_id:          103
+        node_id:          201
         switch:           Spine-201
-        state:            absent
+        state:            "{{ desired_state }}"
 
-    - name:               Add Spine-202
-      aci_fabric_node:
-        <<:               *apic_info
-        serial:           TEP-1-104
-        node_id:          202
-        switch:           Spine-202
-        state:            absent
+#    - name:               Add Spine-202
+#      aci_fabric_node:
+#        <<:               *apic_info
+#        serial:           TEP-1-104
+#        node_id:          202
+#        switch:           Spine-202
+#        state:            "{{ desired_state }}"

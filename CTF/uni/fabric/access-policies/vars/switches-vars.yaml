@@ -18,32 +18,32 @@ switches_leafSwitches_profiles:
   toLeafId:                  '102'
   descr:                     Created by Ansible
 
-- leafName:                  Leaf-103
-  fromLeafId:                '103'
-  toLeafId:                  '103'
-  descr:                     Created by Ansible
+#- leafName:                  Leaf-103
+#  fromLeafId:                '103'
+#  toLeafId:                  '103'
+#  descr:                     Created by Ansible
 
-- leafName:                  Leaf-104
-  fromLeafId:                '104'
-  toLeafId:                  '104'
-  descr:                     Created by Ansible
+#- leafName:                  Leaf-104
+#  fromLeafId:                '104'
+#  toLeafId:                  '104'
+#  descr:                     Created by Ansible
 
-- leafName:                  Leaf-103_and_104
-  fromLeafId:                '103'
-  toLeafId:                  '104'
-  descr:                     Created by Ansible
+#- leafName:                  Leaf-103_and_104
+#  fromLeafId:                '103'
+#  toLeafId:                  '104'
+#  descr:                     Created by Ansible
 
-- leafName:                  Leaf-105
-  fromLeafId:                '105'
-  toLeafId:                  '105'
-  descr:                     Created by Ansible
+#- leafName:                  Leaf-105
+#  fromLeafId:                '105'
+#  toLeafId:                  '105'
+#  descr:                     Created by Ansible
 
-- leafName:                  Leaf-106
-  fromLeafId:                '106'
-  toLeafId:                  '106'
-  descr:                     Created by Ansible
+#- leafName:                  Leaf-106
+#  fromLeafId:                '106'
+#  toLeafId:                  '106'
+#  descr:                     Created by Ansible
 
-- leafName:                  Leaf-105_and_106
-  fromLeafId:                '105'
-  toLeafId:                  '106'
-  descr:                     Created by Ansible
+#- leafName:                  Leaf-105_and_106
+#  fromLeafId:                '105'
+#  toLeafId:                  '106'
+#  descr:                     Created by Ansible

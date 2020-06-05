@@ -53,10 +53,8 @@
   gather_facts:                  no
 
   vars_files:
-#     - ./vars/application-profile-vars.yaml
-     - ./vars/esx-hosts-vars.yaml
+     - ./vars/linux-servers-vars.yaml
      - ./vars/windows-servers-vars.yaml
-
 
   tasks:
     - name:                      Create Application Profile

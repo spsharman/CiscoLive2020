@@ -12,7 +12,7 @@ epg:
 - tenant:         "ctf"
   app_profile:    "10.193.x.x"
   bd:             "10.193.x.x"
-  epg:            "windows-servers"
+  epg:            "linux-servers"
 
 #==============================================================================================
 # Domains.
@@ -20,7 +20,7 @@ epg:
 domain:
 - tenant:         "ctf"
   app_profile:    "10.193.x.x"
-  epg:            "windows-servers"
+  epg:            "linux-servers"
   domain_name:    "physical_servers"
   domain_type:    "phys"
 
@@ -30,16 +30,48 @@ domain:
 static_binding:
 - tenant:         "ctf"
   app_profile:    "10.193.x.x"
-  epg:            "windows-servers"
+  epg:            "linux-servers"
   interface_type: "switch_port"
   leafs:          "101"
-  path:           "1/11"
+  path:           "1/14"
   vlan:           "2000"
 
 - tenant:         "ctf"
   app_profile:    "10.193.x.x"
-  epg:            "windows-servers"
+  epg:            "linux-servers"
   interface_type: "switch_port"
   leafs:          "102"
-  path:           "1/11"
+  path:           "1/14"
+  vlan:           "2000"
+
+- tenant:         "ctf"
+  app_profile:    "10.193.x.x"
+  epg:            "linux-servers"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/15"
+  vlan:           "2000"
+
+- tenant:         "ctf"
+  app_profile:    "10.193.x.x"
+  epg:            "linux-servers"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/15"
+  vlan:           "2000"
+
+- tenant:         "ctf"
+  app_profile:    "10.193.x.x"
+  epg:            "linux-servers"
+  interface_type: "switch_port"
+  leafs:          "101"
+  path:           "1/16"
+  vlan:           "2000"
+
+- tenant:         "ctf"
+  app_profile:    "10.193.x.x"
+  epg:            "linux-servers"
+  interface_type: "switch_port"
+  leafs:          "102"
+  path:           "1/16"
   vlan:           "2000"

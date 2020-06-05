@@ -2,12 +2,10 @@
 #==============================================================================================
 # Available tags:
 #
-#   bridge-domains
-#   gateways
 #
 #==============================================================================================
 
-- import_playbook:        ../../../snapshot.yaml
+# - import_playbook:      ../../../snapshot.yaml
 
 #==============================================================================================
 # Global Configuration
@@ -47,51 +45,31 @@
   tags:                   always
 
 #==============================================================================================
-# Create Bridge Domain and Gateway
+# Create Application Profile
 #==============================================================================================
-- name:                   Create Bridge Domain
+- name:                   Create Application Profiles, EPG and Bindings
   hosts:                  localhost
   connection:             local
   gather_facts:           no
 
   vars_files:
-     - ./vars/bridge-domain-vars.yaml
+     - ./vars/linux-servers-vars.yaml
+     - ./vars/windows-servers-vars.yaml
 
   tasks:
-    - name:
-      aci_bd:
+    - name:               Create Application Profile
+      aci_ap:
         <<:               *apic_info
         tenant:           "{{ item.tenant }}"
-        vrf:              "{{ item.vrf }}"
-        bd:               "{{ item.bd }}"
-        description:      "{{ item.descr }}"
+        ap:               "{{ item.app_profile }}"
+        description:
         state:            "{{ desired_state }}"
       with_items:
-        - "{{ bd }}"
-  tags:
-    - bridge-domains
+        - "{{ ap }}"
 
-#==============================================================================================
-# Add gateways to bridge domains
-#==============================================================================================
-- name:                   Add gateway to bridge domain
-  hosts:                  localhost
-  connection:             local
-  gather_facts:           no
+#      with_files:
+#        - ./vars/linux-servers-vars.yaml
+#        - ./vars/windows-servers-vars.yaml
 
-  vars_files:
-     - ./vars/bridge-domain-vars.yaml
-
-  tasks:
-    - name:
-      aci_bd_subnet:
-        <<:               *apic_info
-        tenant:           "{{ item.tenant }}"
-        bd:               "{{ item.bd }}"
-        gateway:          "{{ item.gw }}"
-        mask:             "{{ item.mask }}"
-        state:            "{{ desired_state }}"
-      with_items:
-        - "{{ gw }}"
-  tags:
-    - gateways
+      tags:
+        - ap

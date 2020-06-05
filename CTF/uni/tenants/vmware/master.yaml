@@ -1,0 +1,2 @@
+---
+- import_playbook: ./application-profiles/application-profiles.yaml

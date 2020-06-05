@@ -4,5 +4,5 @@
 - import_playbook: pools.yaml
 - import_playbook: domains.yaml
 - import_playbook: aaep.yaml
-- import_playbook: interface_policies.yaml
-- import_playbook: interface_policy_groups.yaml
+- import_playbook: interface-policies.yaml
+- import_playbook: interface-policy-groups.yaml

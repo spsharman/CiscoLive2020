@@ -8,17 +8,17 @@ policies_switch_virtualPortChannelDefault:
   vpc_id:                                  "1"
   descr:                                   "Created by Ansible"
 
-- leafName:                                "Leaf-103_and_104"
-  leaf_id_a:                               "103"
-  leaf_id_b:                               "104"
-  vpc_id:                                  "1"
-  descr:                                   "Created by Ansible"
+#- leafName:                                "Leaf-103_and_104"
+#  leaf_id_a:                               "103"
+#  leaf_id_b:                               "104"
+#  vpc_id:                                  "1"
+#  descr:                                   "Created by Ansible"
 
-- leafName:                                "Leaf-105_and_106"
-  leaf_id_a:                               "105"
-  leaf_id_b:                               "106"
-  vpc_id:                                  "1"
-  descr:                                   "Created by Ansible"
+#- leafName:                                "Leaf-105_and_106"
+#  leaf_id_a:                               "105"
+#  leaf_id_b:                               "106"
+#  vpc_id:                                  "1"
+#  descr:                                   "Created by Ansible"
 
 #==============================================================================================
 # Interface Policies
