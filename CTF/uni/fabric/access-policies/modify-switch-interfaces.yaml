@@ -86,8 +86,8 @@
                     status:          "{{ item.status }}"
 # Comment in/out switches as required
       with_items:
-        - "{{ interfaces.interfaces_leafInterfaces_profiles_101_ports }}"
+#        - "{{ interfaces.interfaces_leafInterfaces_profiles_101_ports }}"
 #        - "{{ interfaces.interfaces_leafInterfaces_profiles_102_ports }}"
-#        - "{{ interfaces.interfaces_leafInterfaces_profiles_101_and_102_ports }}"
+        - "{{ interfaces.interfaces_leafInterfaces_profiles_101_and_102_ports }}"
 
   tags:                              ports2leafprofile

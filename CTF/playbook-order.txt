@@ -2,7 +2,6 @@ CTF/uni/fabric/inventory/add-switches.yaml
 CTF/uni/master.yaml
 CTF/uni/fabric/access-policies/master.yaml
 CTF/uni/fabric/access-policies/modify-switch-interfaces.yaml
-CTF/uni/tenants.yaml
 CTF/uni/tenants/common/master.yaml
 CTF/uni/tenants/vmware/master.yaml
 CTF/uni/tenants/ctf/master.yaml
