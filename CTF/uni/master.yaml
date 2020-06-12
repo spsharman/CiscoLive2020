@@ -1,7 +1,9 @@
 ---
 - import_playbook: snapshot.yaml
-- import_playbook: fault-timers.yaml
+- import_playbook: initial-setup-fault-timers.yaml
 - import_playbook: initial-setup-bgp.yaml
 - import_playbook: initial-setup-dns.yaml
 - import_playbook: initial-setup-node-mgmt.yaml
 - import_playbook: initial-setup-ntp.yaml
+- import_playbook: initial-setup-tenants.yaml
+- import_playbook: initial-setup-remove-default-objects.yaml

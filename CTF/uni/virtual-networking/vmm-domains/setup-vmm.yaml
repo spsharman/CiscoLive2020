@@ -1,0 +1,174 @@
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                                  Define global settings
+  hosts:                                 localhost
+  connection:                            local
+  gather_facts:                          no
+
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
+  vars_files:
+     - ../../global-vars/apic-details.yaml
+
+  tasks:
+    - name:
+      set_fact:
+        desired_state:
+          status:                       'modified,created'
+          #status:                        'deleted'
+
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                              apic details
+      set_fact:
+        apic_info:                       &apic_info
+          host:                          "{{ apic_info.host }}"
+          username:                      "{{ apic_info.username }}"
+          password:                      "{{ apic_info.password }}"
+          validate_certs:                no
+
+        rest_info:                       &rest_info
+          use_proxy:                     no
+          path:                          /api/mo/.json
+          method:                        post
+  tags:                                  always
+
+#==============================================================================================
+# Create VMM Domain
+#==============================================================================================
+- name:                                  Configure VMM Domain
+  hosts:                                 localhost
+  connection:                            local
+  gather_facts:                          no
+
+  vars_files:                            ../../fabric/access-policies/vars/pools-vars.yaml
+
+  tasks:
+    - name:                              Create/Delete VMM Domain
+# Need to remove unused fields
+      aci_rest:
+          <<:                            *apic_info
+          <<:                            *rest_info
+          content:
+            vmmDomP:
+              attributes:
+                accessMode:              read-write
+                annotation:              ''
+                arpLearning:             ''
+                aveTimeOut:              '30'
+                configInfraPg:           'no'
+                ctrlKnob:                epDpVerify
+                delimiter:               ''
+                dn:                      uni/vmmp-VMware/dom-My-vCenter
+                enableAVE:               'no'
+                enableTag:               'no'
+                enableVmFolder:          'no'
+                encapMode:               unknown
+                enfPref:                 hw
+                epInventoryType:         on-link
+                epRetTime:               '0'
+                hvAvailMonitor:          'no'
+                mcastAddr:               0.0.0.0
+                mode:                    default
+                name:                    My-vCenter
+                nameAlias:               ''
+                ownerKey:                ''
+                ownerTag:                ''
+                prefEncapMode:           unspecified
+                status:                  "{{desired_state.status}}"
+              children:
+                - vmmVSwitchPolicyCont:
+                    attributes:
+                      annotation:        ''
+                      descr:             ''
+                      nameAlias:         ''
+                      status:            "{{desired_state.status}}"
+                    children:
+                      - vmmRsVswitchOverrideLldpIfPol:
+                          attributes:
+                            annotation:  ''
+                            tDn:         uni/infra/lldpIfP-My-vCenter_lldpIfPol
+                      - vmmRsVswitchOverrideLacpPol:
+                          attributes:
+                            annotation:  ''
+                            tDn:         uni/infra/lacplagp-My-vCenter_lacpLagPol
+                      - vmmRsVswitchOverrideCdpIfPol:
+                          attributes:
+                            annotation:  ''
+                            tDn:         uni/infra/cdpIfP-My-vCenter_cdpIfPol
+                - vmmUsrAccP:
+                    attributes:
+                      annotation:        ''
+                      descr:             ''
+                      name:              vCenterUser
+                      nameAlias:         ''
+                      ownerKey:          ''
+                      ownerTag:          ''
+                      usr:               administrator@vsphere.local
+                      pwd:               C1sco12345!
+                      status:            "{{desired_state.status}}"
+                - vmmRsDefaultStpIfPol:
+                    attributes:
+                      annotation:        ''
+                      tnStpIfPolName:    ''
+                      status:            "{{desired_state.status}}"
+                - vmmRsDefaultLacpLagPol:
+                    attributes:
+                      annotation:        ''
+                      tnLacpLagPolName:  ''
+                      status:            "{{desired_state.status}}"
+                - vmmRsDefaultL2InstPol:
+                    attributes:
+                      annotation:        ''
+                      tnL2InstPolName:   ''
+                      status:            "{{desired_state.status}}"
+                - vmmRsDefaultFwPol:
+                    attributes:
+                      annotation:        ''
+                      tnNwsFwPolName:    ''
+                      status:            "{{desired_state.status}}"
+                - vmmRsDefaultCdpIfPol:
+                    attributes:
+                      annotation:        ''
+                      tnCdpIfPolName:    ''
+                      status:            "{{desired_state.status}}"
+                - vmmRsDefaultLldpIfPol:
+                    attributes:
+                      annotation:        ''
+                      tnLldpIfPolName:   ''
+                      status:            "{{desired_state.status}}"
+                - vmmCtrlrP:
+                    attributes:
+                      annotation:        ''
+                      dvsVersion:        unmanaged
+                      hostOrIp:          198.18.133.30
+                      inventoryTrigSt:   untriggered
+                      mode:              default
+                      msftConfigErrMsg:  ''
+                      msftConfigIssues:  ''
+                      n1kvStatsMode:     enabled
+                      name:              vc1
+                      nameAlias:         ''
+                      port:              '0'
+                      rootContName:      dCloud-DC
+                      scope:             vm
+                      seqNum:            '0'
+                      statsMode:         disabled
+                      vxlanDeplPref:     vxlan
+                      status:            "{{desired_state.status}}"
+                    children:
+                      - vmmRsAcc:
+                          attributes:
+                             annotation: ''
+                             tDn:        uni/vmmp-VMware/dom-My-vCenter/usracc-vCenterUser
+                - infraRsVlanNs:
+                    attributes:
+                      annotation:        ''
+                      tDn:               uni/infra/vlanns-[{{ item.poolName }}]-dynamic
+                      status:            "{{desired_state.status}}"
+      with_items:
+        "{{ pools_vlan }}"
+#tags:

@@ -2,12 +2,10 @@
 #==============================================================================================
 # Available tags:
 #
-#   access-interface-policy-groups
-#   vpc-interface-policy-groups
 #
 #==============================================================================================
 
-- import_playbook:                 ../../snapshot.yaml
+- import_playbook:                 ../../../snapshot.yaml
 
 #==============================================================================================
 # Global Configuration
@@ -21,12 +19,17 @@
 # Set local and global variables
 #==============================================================================================
   vars_files:
-     - ../../global-vars/apic-details.yaml
+     - ../../../global-vars/apic-details.yaml
 
+  tasks:
+    - name:
+      set_fact:
+        desired_state:
+          status:              present
+          #status:             deleted
 #==============================================================================================
 # APIC access information
 #==============================================================================================
-  tasks:
     - name:                          apic details
       set_fact:
         apic_info:                   &apic_info
@@ -42,9 +45,9 @@
   tags:                              always
 
 #==============================================================================================
-# Add interfaces to Leaf Profiles
+# Configure filters
 #==============================================================================================
-- name:                              Configure Switch Interfaces
+- name:                              Configure filters
   hosts:                             localhost
   connection:                        local
   gather_facts:                      no
@@ -52,42 +55,34 @@
   tasks:
     - name:                          Read variable files
       include_vars:
-          name:                      interfaces
+          name:                      filters
           dir:                       ./vars
           ignore_unknown_extensions: True
           extensions:
             - yaml
 
-    - name:                          Configure switch interfaces
-      aci_rest:
-          <<:                        *apic_info
-          <<:                        *rest_info
-          content:
-            infraHPortS:
-              attributes:
-                descr:               "{{ item.descr }}"
-                dn:                  "uni/infra/accportprof-{{ item.leafName }}/hports-eth{{ item.port }}-typ-range"
-                name:                "eth{{ item.port }}"
-                type:                range
-                status:              "{{ item.status }}"
-              children:
-              - infraRsAccBaseGrp:
-                  attributes:
-                    fexId:           '101'
-                    tDn:             "uni/infra/funcprof/accportgrp-{{ item.PolicyGroupName }}"
-              - infraPortBlk:
-                  attributes:
-                    descr:           "{{ item.descr }}"
-                    fromCard:        '1'
-                    fromPort:        "{{ item.port }}"
-                    name:            block2
-                    toCard:          '1'
-                    toPort:          "{{ item.port }}"
-                    status:          "{{ item.status }}"
-# Comment in/out switches as required
+    - name:                          Create Filter
+      aci_filter:
+        <<:                          *apic_info
+        tenant:                      "common"
+        filter:                      "{{ item.subject }}_src_port_{{ item.src_port }}_to_dst_port_{{ item.dst_port }}"
+        state:                       "{{ desired_state.status }}"
       with_items:
-        - "{{ interfaces.interfaces_leafInterfaces_profiles_101_ports }}"
-#        - "{{ interfaces.interfaces_leafInterfaces_profiles_102_ports }}"
-#        - "{{ interfaces.interfaces_leafInterfaces_profiles_101_and_102_ports }}"
+        - "{{ filters.tcp }}"
+        - "{{ filters.udp }}"
 
-  tags:                              ports2leafprofile
+# Create a new filter entry
+    - name:                          Create Filter Entry
+      aci_filter_entry:
+        <<:                          *apic_info
+        filter:                      "{{ item.subject }}_src_port_{{ item.src_port }}_to_dst_port_{{ item.dst_port }}"
+        entry:                       "src_port_{{ item.src_port }}_to_dst_port_{{ item.dst_port }}"
+        tenant:                      "common"
+        ether_type:                  "ip"
+        ip_protocol:                 "{{ item.subject }}"
+        dst_port:                    "{{ item.dst_port }}"
+        state:                       "{{ desired_state.status }}"
+# Comment in/out filters as required
+      with_items:
+        - "{{ filters.tcp }}"
+        - "{{ filters.udp }}"

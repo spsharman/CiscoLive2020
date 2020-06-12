@@ -1,0 +1,91 @@
+---
+#==============================================================================================
+# Available tags:
+#
+#   access-interface-policy-groups
+#   vpc-interface-policy-groups
+#
+#==============================================================================================
+
+- import_playbook:        ../../snapshot.yaml
+
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                       Define global settings
+  hosts:                      localhost
+  connection:                 local
+  gather_facts:               no
+
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
+  vars_files:
+     - ../../global-vars/apic-details.yaml
+
+  tasks:
+
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                   apic details
+      set_fact:
+        apic_info:            &apic_info
+          host:               "{{ apic_info.host }}"
+          username:           "{{ apic_info.username }}"
+          password:           "{{ apic_info.password }}"
+          validate_certs:     no
+
+        rest_info:            &rest_info
+          use_proxy:          no
+          path:               /api/mo/.json
+          method:             post
+  tags:                       always
+
+#==============================================================================================
+# Add interfaces to Leaf Profiles
+#==============================================================================================
+- name:                       Configure Switch Interfaces
+  hosts:                      localhost
+  connection:                 local
+  gather_facts:               no
+
+  vars_files:
+#     - ./vars/interfaces-leaf-101-vars.yaml
+#     - ./vars/interfaces-leaf-102-vars.yaml
+     - ./vars/interfaces-leaf-101_and_102-vars.yaml
+
+  tasks:
+    - name:                   Configure switch interfaces
+      aci_rest:
+          <<:                 *apic_info
+          <<:                 *rest_info
+          content:
+            infraHPortS:
+              attributes:
+                descr:        "{{ item.descr }}"
+                dn:           "uni/infra/accportprof-{{ item.leafName }}/hports-eth{{ item.port }}-typ-range"
+                name:         "eth{{ item.port }}"
+                type:         range
+                status:       "{{ item.status }}"
+              children:
+              - infraRsAccBaseGrp:
+                  attributes:
+                    fexId:    '101'
+                    tDn:      "uni/infra/funcprof/accportgrp-{{ item.PolicyGroupName }}"
+              - infraPortBlk:
+                  attributes:
+                    descr:    "{{ item.descr }}"
+                    fromCard: '1'
+                    fromPort: "{{ item.port }}"
+                    name:     block2
+                    toCard:   '1'
+                    toPort:   "{{ item.port }}"
+                    status:   "{{ item.status }}"
+
+      with_items:
+#        - "{{ interfaces_leafInterfaces_profiles_101_ports }}"
+#        - "{{ interfaces_leafInterfaces_profiles_102_ports }}"
+        - "{{ interfaces_leafInterfaces_profiles_101_and_102_ports }}"
+
+  tags:                       ports2leafprofile

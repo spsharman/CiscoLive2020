@@ -46,9 +46,9 @@
   tags:                   always
 
 #==============================================================================================
-# Tenants
+# Domains
 #==============================================================================================
-- name:                   Create Tenant
+- name:                   Remove default physical domain
   hosts:                  localhost
   connection:             local
   gather_facts:           no
@@ -57,13 +57,9 @@
      - ./global-vars/tenants.yaml
 
   tasks:
-    - name:               Create Tenant
-      aci_tenant:
+    - name:               Remove Domains
+      aci_domain:
         <<:               *apic_info
-        tenant:           "{{ item.tenant }}"
-        description:      "{{ item.descr }}"
-        state:            "{{ desired_state }}"
-      with_items:
-        - "{{ tenants }}"
-  tags:
-    - tenants
+        domain:           phys
+        domain_type:      phys
+        state:            absent
