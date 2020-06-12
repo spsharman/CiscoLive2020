@@ -1,0 +1,28 @@
+#==============================================================================================
+# Contract name derived from Tenant, Application Profile, EPG
+#==============================================================================================
+contract:
+- cons_tn_name:  "ctf"
+  cons_ap_name:  "WordPress"
+  cons_epg_name: "web-tier"
+  prov_tn_name:  "ctf"
+  prov_ap_name:  "WordPress"
+  prov_epg_name: "db-tier"
+  description:   ""
+  scope:         "context"
+  subject:      "tcp"
+  src_port:      "any"
+  dst_port:      "8443"
+
+
+- cons_tn_name:  "ctf"
+  cons_ap_name:  "WordPress"
+  cons_epg_name: "web-tier"
+  prov_tn_name:  "ctf"
+  prov_ap_name:  "WordPress"
+  prov_epg_name: "db-tier"
+  description:   ""
+  scope:         "context"
+  subject:      "tcp"
+  src_port:      "any"
+  dst_port:      "443"

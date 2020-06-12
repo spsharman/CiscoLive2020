@@ -1,0 +1,179 @@
+---
+#==============================================================================================
+# Available tags:
+#
+# filters
+# contract
+# subject
+# aci_contract_subject_to_filter
+# bind-contract
+#
+#==============================================================================================
+
+- import_playbook:                    ../../../snapshot.yaml
+  tags:                               snapshot
+
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                               Define global settings
+  hosts:                              localhost
+  connection:                         local
+  gather_facts:                       no
+
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
+  vars_files:
+     - ../../../global-vars/apic-details.yaml
+
+  tasks:
+    - name:
+      set_fact:
+        desired_state:
+          status:                     present
+          #status:                    deleted
+
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                           apic details
+      set_fact:
+        apic_info:                    &apic_info
+          host:                       "{{ apic_info.host }}"
+          username:                   "{{ apic_info.username }}"
+          password:                   "{{ apic_info.password }}"
+          validate_certs:             no
+
+        rest_info:                    &rest_info
+          use_proxy:                  no
+          path:                       /api/mo/.json
+          method:                     post
+  tags:                               always
+
+#==============================================================================================
+# Create the filters
+#==============================================================================================
+- name:                               Configure filters
+  hosts:                              localhost
+  connection:                         local
+  gather_facts:                       no
+
+  vars_files:
+     - ./vars/contract-vars.yaml
+
+  tasks:
+    - name:                           Create Filter
+      aci_filter:
+        <<:                           *apic_info
+        tenant:                       "common"
+        filter:                       "{{ item.subject }}_src_port_{{ item.src_port }}_to_dst_port_{{ item.dst_port }}"
+        state:                        "{{ desired_state.status }}"
+      with_items:
+        "{{ contract }}"
+
+# Create a new filter entry
+    - name:                           Create Filter Entry
+      aci_filter_entry:
+        <<:                           *apic_info
+        filter:                       "{{ item.subject }}_src_port_{{ item.src_port }}_to_dst_port_{{ item.dst_port }}"
+        entry:                        "src_port_{{ item.src_port }}_to_dst_port_{{ item.dst_port }}"
+        tenant:                       "common"
+        ether_type:                   "ip"
+        ip_protocol:                  "{{ item. subject }}"
+        dst_port:                     "{{ item.dst_port }}"
+        state:                        "{{ desired_state.status }}"
+      with_items:
+        "{{ contract }}"
+  tags:                               filters
+
+#==============================================================================================
+# Add the contracts
+#==============================================================================================
+# naming structure:                   consumer tenant|app|epg to provider tenant|app|epg
+- name:                               Configure contracts between tenants
+  hosts:                              localhost
+  connection:                         local
+  gather_facts:                       no
+
+  vars_files:
+     - ./vars/contract-vars.yaml
+
+  tasks:
+    - name:                           Add a new contract
+      aci_contract:
+        <<:                           *apic_info
+        tenant:                       "{{ item.cons_tn_name }}"
+        contract:                     "{{ item.cons_tn_name }}_{{ item.cons_ap_name }}_{{ item.cons_epg_name }}_to_{{ item.prov_tn_name }}_{{ item.prov_ap_name }}_{{ item.prov_epg_name }}"
+        description:                  "{{ item.description }}"
+        scope:                        "{{ item.scope }}"
+        state:                        "{{ desired_state.status }}"
+      with_items:
+        "{{ contract }}"
+      tags:                           contract
+
+    - name:                           Add a new contract subject
+      aci_contract_subject:
+        <<:                           *apic_info
+        tenant:                       "{{ item.cons_tn_name }}"
+        contract:                     "{{ item.cons_tn_name }}_{{ item.cons_ap_name }}_{{ item.cons_epg_name }}_to_{{ item.prov_tn_name }}_{{ item.prov_ap_name }}_{{ item.prov_epg_name }}"
+        subject:                      "{{ item.subject }}"
+        description:                  ""
+        reverse_filter:               yes
+#        priority:                    ""
+#        dscp:                        ""
+        state:                        "{{ desired_state.status }}"
+      with_items:
+        "{{ contract }}"
+      tags:                           subject
+
+    - name:                           Add a new contract subject to filter binding
+      aci_contract_subject_to_filter:
+        <<:                           *apic_info
+        tenant:                       "{{ item.cons_tn_name }}"
+        contract:                     "{{ item.cons_tn_name }}_{{ item.cons_ap_name }}_{{ item.cons_epg_name }}_to_{{ item.prov_tn_name }}_{{ item.prov_ap_name }}_{{ item.prov_epg_name }}"
+        subject:                      "{{ item.subject }}"
+        filter:                       "{{ item.subject }}_src_port_{{ item.src_port }}_to_dst_port_{{ item.dst_port }}"
+  #      log:                         none
+        state:                        "{{ desired_state.status }}"
+      with_items:
+        "{{ contract }}"
+      tags:                           subject-to-filter
+
+#==============================================================================================
+# Bind the contracts
+#==============================================================================================
+# naming structure:                   consumer tenant|app|epg to provider tenant|app|epg
+- name:                               Configure contracts between tenants
+  hosts:                              localhost
+  connection:                         local
+  gather_facts:                       no
+
+  vars_files:
+     - ./vars/contract-vars.yaml
+
+  tasks:
+    - name:                           Bind Contract to Destination EPG
+      aci_epg_to_contract:
+        <<:                           *apic_info
+        tenant:                       "{{ item.cons_tn_name }}"
+        ap:                           "{{ item.cons_ap_name }}"
+        epg:                          "{{ item.cons_epg_name }}"
+        contract:                     "{{ item.cons_tn_name }}_{{ item.cons_ap_name }}_{{ item.cons_epg_name }}_to_{{ item.prov_tn_name }}_{{ item.prov_ap_name }}_{{ item.prov_epg_name }}"
+        contract_type:                consumer
+        state:                        "{{ desired_state.status }}"
+      with_items:
+        "{{ contract }}"
+
+    - name:                           Bind Contract to Source EPG
+      aci_epg_to_contract:
+        <<:                           *apic_info
+        tenant:                       "{{ item.prov_tn_name }}"
+        ap:                           "{{ item.prov_ap_name }}"
+        epg:                          "{{ item.prov_epg_name }}"
+        contract:                     "{{ item.cons_tn_name }}_{{ item.cons_ap_name }}_{{ item.cons_epg_name }}_to_{{ item.prov_tn_name }}_{{ item.prov_ap_name }}_{{ item.prov_epg_name }}"
+        contract_type:                provider
+        state:                        "{{ desired_state.status }}"
+      with_items:
+        "{{ contract }}"
+  tags:                               bind-contract

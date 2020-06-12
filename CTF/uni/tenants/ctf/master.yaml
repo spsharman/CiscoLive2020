@@ -1,2 +1,3 @@
 ---
 - import_playbook: ./application-profiles/application-profiles.yaml
+- import_playbook: ./contracts/add-contracts.yaml

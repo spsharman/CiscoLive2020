@@ -5,6 +5,8 @@
 #
 #==============================================================================================
 
+- import_playbook:        ../../snapshot.yaml
+  tags:                   snapshot
 
 #==============================================================================================
 # Global Configuration
@@ -77,10 +79,10 @@
         switch:           Spine-201
         state:            "{{ desired_state }}"
 
-#    - name:               Add Spine-202
+#    - name:              Add Spine-202
 #      aci_fabric_node:
-#        <<:               *apic_info
-#        serial:           TEP-1-104
-#        node_id:          202
-#        switch:           Spine-202
-#        state:            "{{ desired_state }}"
+#        <<:              *apic_info
+#        serial:          TEP-1-104
+#        node_id:         202
+#        switch:          Spine-202
+#        state:           "{{ desired_state }}"
