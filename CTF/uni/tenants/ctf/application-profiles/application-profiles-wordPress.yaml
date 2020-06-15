@@ -1,0 +1,100 @@
+---
+#==============================================================================================
+# Available tags:
+#
+#
+#==============================================================================================
+
+- import_playbook:               ../../../snapshot.yaml
+
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                          Define global settings
+  hosts:                         localhost
+  connection:                    local
+  gather_facts:                  no
+
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
+  vars_files:
+     - ../../../global-vars/apic-details.yaml
+
+  tasks:
+    - name:
+      set_fact:
+        desired_state:           present
+    #    desired_state:          absent
+
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                      apic details
+      set_fact:
+        apic_info:               &apic_info
+          host:                  "{{ apic_info.host }}"
+          username:              "{{ apic_info.username }}"
+          password:              "{{ apic_info.password }}"
+          validate_certs:        no
+
+        rest_info:               &rest_info
+          use_proxy:             no
+          path:                  /api/mo/.json
+          method:                post
+  tags:                          always
+
+#==============================================================================================
+# Create Application Profile
+#==============================================================================================
+- name:                          Create Application Profiles, EPG and Bindings
+  hosts:                         localhost
+  connection:                    local
+  gather_facts:                  no
+
+  vars_files:
+     - ./vars/wordPress-vars.yaml
+
+  tasks:
+    - name:                      Create Application Profile
+      aci_ap:
+        <<:                      *apic_info
+        tenant:                  "{{ item.tenant }}"
+        ap:                      "{{ item.app_profile }}"
+        description:
+        state:                   "{{ desired_state }}"
+      with_items:
+        - "{{ ap }}"
+      tags:
+        - ap
+
+
+    - name:                      Create EPG
+      aci_epg:
+        <<:                      *apic_info
+        tenant:                  "{{ item.tenant }}"
+        ap:                      "{{ item.app_profile }}"
+        bd:                      "{{ item.bd }}"
+        epg:                     "{{ item.epg }}"
+        description:
+        state:                   "{{ desired_state }}"
+      with_items:
+        - "{{ epg }}"
+      tags:
+        - epg
+
+
+    - name:                      Add domain to an EPG
+      aci_epg_to_domain:
+        <<:                      *apic_info
+        tenant:                  "{{ item.tenant }}"
+        ap:                      "{{ item.app_profile }}"
+        epg:                     "{{ item.epg }}"
+        domain:                  "{{ item.domain_name }}"
+        domain_type:             "{{ item.domain_type }}"
+        vm_provider:             "{{ item.vm_provider }}"
+        state:                   "{{ desired_state }}"
+      with_items:
+        - "{{ domain }}"
+      tags:
+        - domain

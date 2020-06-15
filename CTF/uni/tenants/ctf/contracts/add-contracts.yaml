@@ -91,7 +91,7 @@
 # Add the contracts
 #==============================================================================================
 # naming structure:                   consumer tenant|app|epg to provider tenant|app|epg
-- name:                               Configure contracts between tenants
+- name:                               Configure contracts between epgs
   hosts:                              localhost
   connection:                         local
   gather_facts:                       no

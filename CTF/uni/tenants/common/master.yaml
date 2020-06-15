@@ -1,3 +1,4 @@
 ---
 - import_playbook: ./networking/vrfs.yaml
 - import_playbook: ./networking/bridge-domains.yaml
+- import_playbook: ./contracts/filter-builder.yaml

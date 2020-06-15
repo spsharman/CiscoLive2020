@@ -7,3 +7,4 @@
 - import_playbook: initial-setup-ntp.yaml
 - import_playbook: initial-setup-tenants.yaml
 - import_playbook: initial-setup-remove-default-objects.yaml
+- import_playbook: ./fabric/inventory/add-switches.yaml

@@ -1,0 +1,38 @@
+#==============================================================================================
+# Application Profiles.
+#==============================================================================================
+ap:
+- tenant:         "ctf"
+  app_profile:    "WordPress"
+
+#==============================================================================================
+# EPGs.
+#==============================================================================================
+epg:
+- tenant:         "ctf"
+  app_profile:    "WordPress"
+  bd:             "10.193.x.x"
+  epg:            "web-tier"
+
+- tenant:         "ctf"
+  app_profile:    "WordPress"
+  bd:             "10.193.x.x"
+  epg:            "db-tier"
+
+#==============================================================================================
+# Domains.
+#==============================================================================================
+domain:
+- tenant:         "ctf"
+  app_profile:    "WordPress"
+  epg:            "web-tier"
+  domain_name:    "My-vCenter"
+  domain_type:    "vmm"
+  vm_provider:    "vmware"
+
+- tenant:         "ctf"
+  app_profile:    "WordPress"
+  epg:            "db-tier"
+  domain_name:    "My-vCenter"
+  domain_type:    "vmm"
+  vm_provider:    "vmware"

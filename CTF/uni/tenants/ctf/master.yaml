@@ -1,3 +1,5 @@
 ---
-- import_playbook: ./application-profiles/application-profiles.yaml
+- import_playbook: ./application-profiles/application-profiles-linux.yaml
+- import_playbook: ./application-profiles/application-profiles-windows.yaml
+- import_playbook: ./application-profiles/application-profiles-wordPress.yaml
 - import_playbook: ./contracts/add-contracts.yaml
