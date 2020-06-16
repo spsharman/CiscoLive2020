@@ -1,5 +1,15 @@
 ---
 #==============================================================================================
+# Available tags:
+#
+#   leaf-profiles
+#
+#==============================================================================================
+
+- import_playbook:         ../../snapshot.yaml
+  tags:                    snapshot
+
+#==============================================================================================
 # Global Configuration
 #==============================================================================================
 - name:                    Define global settings
@@ -7,17 +17,22 @@
   connection:              local
   gather_facts:            no
 
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
   vars_files:
      - ../../global-vars/apic-details.yaml
 
   tasks:
     - name:
       set_fact:
-        #desired_state:    present
-        #desired_state:    absent
-        desired_status:    modified,created
-        #desired_status:   deleted
+        desired_state:
+          status:          'modified,created'
+          #status:         deleted
 
+#==============================================================================================
+# APIC access information
+#==============================================================================================
     - name:                apic details
       set_fact:
         apic_info:         &apic_info
@@ -31,18 +46,6 @@
           path:            /api/mo/.json
           method:          post
   tags:                    always
-
-#==============================================================================================
-# Begin Plays
-#
-# Available Tags:
-#               snapshot
-#               leaf-profiles
-#==============================================================================================
-- import_playbook:         ../../snapshot.yaml
-  vars:
-    snapshotDescription:   Prior to adding the Leaf Profiles - Created by Ansible
-  tags:                    snapshot
 
 #==============================================================================================
 # Create Leaf Interface Profiles
@@ -66,7 +69,7 @@
                 descr:     "{{ item.descr }}"
                 dn:        "uni/infra/accportprof-{{item.leafName}}"
                 name:      "{{ item.leafName }}"
-                status:    "{{ desired_status }}"
+                status:    "{{ desired_state.status }}"
       with_items:
         "{{ interfaces_leafInterfaces_profiles }}"
   tags:                    leaf-profiles

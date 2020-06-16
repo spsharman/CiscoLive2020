@@ -1,33 +1,22 @@
 ---
 #==============================================================================================
-# Available tags:
-#
-# snapshot
-#
-#==============================================================================================
-
-#==============================================================================================
 # Global Configuration
 #==============================================================================================
-- import_playbook:        ../../../snapshot.yaml
-  tags:                   snapshot
-
 - name:                   Define global settings
   hosts:                  localhost
   connection:             local
   gather_facts:           no
 
   vars_files:
-     - ../../../global-vars/apic-details.yaml
+     - ../../global-vars/apic-details.yaml
 
   tasks:
     - name:
       set_fact:
-        desired_state:
-          status:         present
-          #status:        deleted
-          #status:        "modified,created"
-          #status:        "deleted"
+        desired_state:    present
+        #desired_state:   absent
+        #desired_status:  modified,created
+        #desired_status:  deleted
 
     - name:               apic details
       set_fact:
@@ -45,4 +34,12 @@
 
 #==============================================================================================
 # Begin Plays
+#
+# Available Tags:
+#               snapshot
+#               manage-switches
 #==============================================================================================
+- import_playbook:        ../../snapshot.yaml
+  vars:
+    snapshotDescription:  Prior to adding switches to the fabric - Created by Ansible
+  tags:                   snapshot

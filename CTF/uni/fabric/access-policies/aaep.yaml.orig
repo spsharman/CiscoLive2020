@@ -1,49 +1,52 @@
 ---
 #==============================================================================================
+# Available tags:
+#
+#   physical-domains
+#   L2-domains
+#
+#==============================================================================================
+
+- import_playbook:                ../../snapshot.yaml
+  tags:                           snapshot
+
+#==============================================================================================
 # Global Configuration
 #==============================================================================================
-- name:                   Define global settings
-  hosts:                  localhost
-  connection:             local
-  gather_facts:           no
+- name:                           Define global settings
+  hosts:                          localhost
+  connection:                     local
+  gather_facts:                   no
 
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
   vars_files:
      - ../../global-vars/apic-details.yaml
 
   tasks:
     - name:
       set_fact:
-        #desired_state:    present
-        #desired_state:   absent
-        desired_status:  modified,created
-        #desired_status:  deleted
+        desired_state:
+          status:                 'modified,created'
+          #status:                deleted
 
-    - name:               apic details
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                       apic details
       set_fact:
-        apic_info:        &apic_info
-          host:           "{{ apic_info.host }}"
-          username:       "{{ apic_info.username }}"
-          password:       "{{ apic_info.password }}"
-          validate_certs: no
+        apic_info:                &apic_info
+          host:                   "{{ apic_info.host }}"
+          username:               "{{ apic_info.username }}"
+          password:               "{{ apic_info.password }}"
+          validate_certs:         no
 
-        rest_info:        &rest_info
-          use_proxy:      no
-          path:           /api/mo/.json
-          method:         post
-  tags:                   always
-
-#==============================================================================================
-# Begin Plays
-#
-# Available Tags:
-#               snapshot
-#               physical-domain
-#               L2-domain
-#==============================================================================================
-- import_playbook:        ../../snapshot.yaml
-  vars:
-    snapshotDescription:  Prior to configuring the AAEPs - Created by Ansible
-  tags:                   snapshot
+        rest_info:                &rest_info
+          use_proxy:              no
+          path:                   /api/mo/.json
+          method:                 post
+  tags:                           always
 
 #==============================================================================================
 # Configure Global Policies - AAEP
@@ -65,7 +68,7 @@
             infraInfra:
               attributes:
                 dn:               uni/infra
-                status:           "{{ desired_status }}"
+                status:           "{{ desired_state.status }}"
               children:
               - infraAttEntityP:
                   attributes:
@@ -73,16 +76,16 @@
                     name:         "{{ item.aaepName }}"
                     descr:        "{{ item.descr }}"
                     rn:           "attentp-{{ item.aaepName }}"
-                    status:       "{{ desired_status }}"
+                    status:       "{{ desired_state.status }}"
                   children:
                   - infraRsDomP:
                       attributes:
                         tDn:      "uni/phys-{{ item.domainName }}"
-                        status:   "{{ desired_status }}"
+                        status:   "{{ desired_state.status }}"
               - infraFuncP:
                   attributes:
                     dn:           uni/infra/funcprof
-                    status:       "{{ desired_status }}"
+                    status:       "{{ desired_state.status }}"
       with_items:
         "{{ policies_global_aaep_phys }}"
   tags:                           physical-domain
@@ -107,7 +110,7 @@
             infraInfra:
               attributes:
                 dn:               uni/infra
-                status:           "{{ desired_status }}"
+                status:           "{{ desired_state.status }}"
               children:
               - infraAttEntityP:
                   attributes:
@@ -115,16 +118,16 @@
                     name:         "{{ item.aaepName }}"
                     descr:        "{{ item.descr }}"
                     rn:           "attentp-{{ item.aaepName }}"
-                    status:       "{{ desired_status }}"
+                    status:       "{{ desired_state.status }}"
                   children:
                   - infraRsDomP:
                       attributes:
                         tDn:      "uni/l2dom-{{ item.domainName }}"
-                        status:   "{{ desired_status }}"
+                        status:   "{{ desired_state.status }}"
               - infraFuncP:
                   attributes:
                     dn:           uni/infra/funcprof
-                    status:       "{{ desired_status }}"
+                    status:       "{{ desired_state.status }}"
       with_items:
         "{{ policies_global_aaep_l2 }}"
   tags:                           L2-domain

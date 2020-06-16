@@ -6,3 +6,6 @@
 - import_playbook: aaep.yaml
 - import_playbook: interface-policies.yaml
 - import_playbook: interface-policy-groups.yaml
+- import_playbook: modify-switch-interfaces-leaf-101.yaml
+- import_playbook: modify-switch-interfaces-leaf-102.yaml
+- import_playbook: modify-switch-interfaces-leaf-101-and-102.yaml

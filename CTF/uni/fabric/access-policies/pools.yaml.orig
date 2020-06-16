@@ -1,48 +1,51 @@
 ---
 #==============================================================================================
+# Available tags:
+#
+#   pools
+#
+#==============================================================================================
+
+- import_playbook:             ../../snapshot.yaml
+  tags:                        snapshot
+
+#==============================================================================================
 # Global Configuration
 #==============================================================================================
-- name:                   Define global settings
-  hosts:                  localhost
-  connection:             local
-  gather_facts:           no
+- name:                        Define global settings
+  hosts:                       localhost
+  connection:                  local
+  gather_facts:                no
 
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
   vars_files:
      - ../../global-vars/apic-details.yaml
 
   tasks:
     - name:
       set_fact:
-        #desired_state:    present
-        #desired_state:   absent
-        desired_status:  modified,created
-        #desired_status:  deleted
+        desired_state:
+          status:              'modified,created'
+          #status:             deleted
 
-    - name:               apic details
+#==============================================================================================
+# APIC access information
+#==============================================================================================
+    - name:                    apic details
       set_fact:
-        apic_info:        &apic_info
-          host:           "{{ apic_info.host }}"
-          username:       "{{ apic_info.username }}"
-          password:       "{{ apic_info.password }}"
-          validate_certs: no
+        apic_info:             &apic_info
+          host:                "{{ apic_info.host }}"
+          username:            "{{ apic_info.username }}"
+          password:            "{{ apic_info.password }}"
+          validate_certs:      no
 
-        rest_info:        &rest_info
-          use_proxy:      no
-          path:           /api/mo/.json
-          method:         post
-  tags:                   always
-
-#==============================================================================================
-# Begin Plays
-#
-# Available Tags:
-#               snapshot
-#               pools
-#==============================================================================================
-- import_playbook:        ../../snapshot.yaml
-  vars:
-    snapshotDescription:  Prior to adding VLAN Pools - Created by Ansible
-  tags:                   snapshot
+        rest_info:             &rest_info
+          use_proxy:           no
+          path:                /api/mo/.json
+          method:              post
+  tags:                        always
 
 #==============================================================================================
 # Configure Pools
@@ -66,7 +69,7 @@
                 descr:         "{{ item.descr }}"
                 dn:            "uni/infra/vlanns-[{{ item.poolName }}]-[{{ item.poolType }}]"
                 name:          "{{ item.poolName }}"
-                status:        "{{ desired_status }}"
+                status:        "{{ desired_state.status }}"
               children:
               - fvnsEncapBlk:
                   attributes:

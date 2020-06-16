@@ -37,11 +37,11 @@
 #
 # Available Tags:
 #               snapshot
-#               manage-switches
+#               leaf-102
 #==============================================================================================
 - import_playbook:                   ../../snapshot.yaml
   vars:
-    snapshotDescription:             Prior to configuring the switch interfaces - Created by Ansible
+    snapshotDescription:             Prior to configuring Leaf 102 interfaces - Created by Ansible
   tags:                              snapshot
 
 #==============================================================================================
@@ -87,10 +87,7 @@
                     toCard:          '1'
                     toPort:          "{{ item.port }}"
                     status:          "{{ item.status }}"
-# Comment in/out switches as required
       with_items:
-#        - "{{ interfaces.interfaces_leafInterfaces_profiles_101_ports }}"
-#        - "{{ interfaces.interfaces_leafInterfaces_profiles_102_ports }}"
-        - "{{ interfaces.interfaces_leafInterfaces_profiles_101_and_102_ports }}"
+        - "{{ interfaces.interfaces_leafInterfaces_profiles_102_ports }}"
 
-  tags:                              ports2leafprofile
+  tags:                              leaf-102
