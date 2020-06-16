@@ -1,4 +1,3 @@
----
 #==============================================================================================
 # Global Configuration
 #==============================================================================================
@@ -7,17 +6,22 @@
   connection:                    local
   gather_facts:                  no
 
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
   vars_files:
      - ./global-vars/apic-details.yaml
 
   tasks:
     - name:
       set_fact:
-        #desired_state:          present
-        #desired_state:          absent
-        desired_status:          modified,created
-        #desired_status:         deleted
+        desired_state:
+          status:                'modified,created'
+          #status:               deleted
 
+#==============================================================================================
+# APIC access information
+#==============================================================================================
     - name:                      apic details
       set_fact:
         apic_info:               &apic_info
@@ -33,21 +37,9 @@
   tags:                          always
 
 #==============================================================================================
-# Begin Plays
-#
-# Available Tags:
-#               snapshot
-#               dns
+# Create Physical Domains
 #==============================================================================================
-- import_playbook:               ./snapshot.yaml
-  vars:
-    snapshotDescription:         Prior to DNS Configuration - Created by Ansible
-  tags:                          snapshot
-
-#==============================================================================================
-# Configure DNS servers
-#==============================================================================================
-- name:                          Manage DNS server addresses
+- name:                          Configure DNS server addresses
   hosts:                         localhost
   connection:                    local
   gather_facts:                  no
@@ -55,7 +47,7 @@
   vars_files:                    ./global-vars/dns.yaml
 
   tasks:
-    - name:                      Create/Delete DNS servers
+    - name:                      Create/Delete DNS server addresses
       aci_rest:
           <<:                    *apic_info
           <<:                    *rest_info
@@ -70,7 +62,7 @@
                 nameAlias:       ''
                 ownerKey:        ''
                 ownerTag:        ''
-                status:          "{{desired_status}}"
+                status:          "{{desired_state.status}}"
               children:
               - dnsRsProfileToEpg:
                   attributes:
@@ -85,4 +77,4 @@
                     preferred:   'no'
       with_items:
         "{{dnsProfile}}"
-  tags:                          dns
+  #tags:

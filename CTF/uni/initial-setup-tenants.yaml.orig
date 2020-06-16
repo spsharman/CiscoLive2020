@@ -1,5 +1,14 @@
 ---
 #==============================================================================================
+# Available tags:
+#
+#   tenants
+#
+#==============================================================================================
+
+- import_playbook:        ./snapshot.yaml
+
+#==============================================================================================
 # Global Configuration
 #==============================================================================================
 - name:                   Define global settings
@@ -7,6 +16,9 @@
   connection:             local
   gather_facts:           no
 
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
   vars_files:
      - ./global-vars/apic-details.yaml
 
@@ -14,10 +26,11 @@
     - name:
       set_fact:
         desired_state:    present
-        #desired_state:    absent
-        #desired_status:   modified,created
-        #desired_status:   deleted
+    #    desired_state:   absent
 
+#==============================================================================================
+# APIC access information
+#==============================================================================================
     - name:               apic details
       set_fact:
         apic_info:        &apic_info
@@ -33,21 +46,9 @@
   tags:                   always
 
 #==============================================================================================
-# Begin Plays
-#
-# Available Tags:
-#               snapshot
-#               tenants
-#==============================================================================================
-- import_playbook:        ./snapshot.yaml
-  vars:
-    snapshotDescription:  Prior to adding Tenants - Created by Ansible
-  tags:                   snapshot
-
-#==============================================================================================
 # Add Tenants
 #==============================================================================================
-- name:                   Manage Tenants
+- name:                   Add Tenants
   hosts:                  localhost
   connection:             local
   gather_facts:           no
@@ -56,12 +57,11 @@
      - ./global-vars/tenants.yaml
 
   tasks:
-    - name:               Create/Delete Tenants
+    - name:               Add Tenants
       aci_tenant:
         <<:               *apic_info
         tenant:           "{{ item.tenant }}"
         description:      "{{ item.descr }}"
-        state:            "{{ desired_state }}"
+        state:            "{{desired_state}}"
       loop:
         "{{tenants}}"
-      tags:               tenants

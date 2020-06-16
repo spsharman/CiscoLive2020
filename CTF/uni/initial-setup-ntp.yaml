@@ -1,45 +1,53 @@
+---
 #==============================================================================================
 # Global Configuration
 #==============================================================================================
-- name:                         Define global settings
-  hosts:                        localhost
-  connection:                   local
-  gather_facts:                 no
+- name:                      Define global settings
+  hosts:                     localhost
+  connection:                local
+  gather_facts:              no
 
-#==============================================================================================
-# Set local and global variables
-#==============================================================================================
   vars_files:
      - ./global-vars/apic-details.yaml
 
   tasks:
     - name:
       set_fact:
-        desired_state:
-          status:               'modified,created'
-          #status:              deleted
+        #desired_state:      present
+        #desired_state:      absent
+        desired_status:      modified,created
+        #desired_status:     deleted
 
-#==============================================================================================
-# APIC access information
-#==============================================================================================
-    - name:                     apic details
+    - name:                  apic details
       set_fact:
-        apic_info:              &apic_info
-          host:                 "{{ apic_info.host }}"
-          username:             "{{ apic_info.username }}"
-          password:             "{{ apic_info.password }}"
-          validate_certs:       no
+        apic_info:           &apic_info
+          host:              "{{ apic_info.host }}"
+          username:          "{{ apic_info.username }}"
+          password:          "{{ apic_info.password }}"
+          validate_certs:    no
 
-        rest_info:              &rest_info
-          use_proxy:            no
-          path:                 /api/mo/.json
-          method:               post
-  tags:                         always
+        rest_info:           &rest_info
+          use_proxy:         no
+          path:              /api/mo/.json
+          method:            post
+  tags:                      always
 
 #==============================================================================================
-# Create Physical Domains
+# Begin Plays
+#
+# Available Tags:
+#               snapshot
+#               ntp
 #==============================================================================================
-- name:                         Configure NTP server addresses
+- import_playbook:           ./snapshot.yaml
+  vars:
+    snapshotDescription:     Prior to NTP Configuration - Created by Ansible
+  tags:                      snapshot
+
+#==============================================================================================
+# Configure NTP server addresses
+#==============================================================================================
+- name:                         Manage NTP servers
   hosts:                        localhost
   connection:                   local
   gather_facts:                 no
@@ -64,7 +72,7 @@
                 nameAlias:      ''
                 preferred:      'no'
                 trueChimer:     disabled
-                status:         "{{desired_state.status}}"
+                status:         "{{desired_status}}"
               children:
               - datetimeRsNtpProvToEpg:
                   attributes:
@@ -72,4 +80,4 @@
                     tDn:        uni/tn-mgmt/mgmtp-default/oob-default
       with_items:
         "{{datetimeNtpProv}}"
-  #tags:
+  tags:                         ntp

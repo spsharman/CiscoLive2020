@@ -1,14 +1,5 @@
 ---
 #==============================================================================================
-# Available tags:
-#
-#
-#==============================================================================================
-
-- import_playbook:        ../../snapshot.yaml
-  tags:                   snapshot
-
-#==============================================================================================
 # Global Configuration
 #==============================================================================================
 - name:                   Define global settings
@@ -16,9 +7,6 @@
   connection:             local
   gather_facts:           no
 
-#==============================================================================================
-# Set local and global variables
-#==============================================================================================
   vars_files:
      - ../../global-vars/apic-details.yaml
 
@@ -26,12 +14,10 @@
     - name:
       set_fact:
         desired_state:    present
-    #    desired_state:   absent
+        #desired_state:   absent
+        #desired_status:  modified,created
+        #desired_status:  deleted
 
-#==============================================================================================
-# APIC access information
-#==============================================================================================
-#  tasks:
     - name:               apic details
       set_fact:
         apic_info:        &apic_info
@@ -47,9 +33,21 @@
   tags:                   always
 
 #==============================================================================================
+# Begin Plays
+#
+# Available Tags:
+#               snapshot
+#               manage-switches
+#==============================================================================================
+- import_playbook:        ../../snapshot.yaml
+  vars:
+    snapshotDescription:  Prior to adding switches to the fabric - Created by Ansible
+  tags:                   snapshot
+
+#==============================================================================================
 # Add switches to simulator
 #==============================================================================================
-- name:                   Manage switches in inventory
+- name:                   Create/Delete Switches
   hosts:                  localhost
   connection:             local
   gather_facts:           no
@@ -86,3 +84,5 @@
 #        node_id:         202
 #        switch:          Spine-202
 #        state:           "{{ desired_state }}"
+
+  tags:                   manage-switches

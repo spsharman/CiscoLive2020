@@ -40,10 +40,8 @@
   connection:              local
   gather_facts:            no
 
-# uncomment the following lines for test purposes
-#
-#  vars:
-#    snapshotDescription:  Snapshot Created by Ansible
+  vars:
+    snapshotDescription:  Initial Snapshot - Created by Ansible
 #
 
   tasks:

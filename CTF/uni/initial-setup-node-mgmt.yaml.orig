@@ -1,4 +1,3 @@
----
 #==============================================================================================
 # Global Configuration
 #==============================================================================================
@@ -7,17 +6,22 @@
   connection:                local
   gather_facts:              no
 
+#==============================================================================================
+# Set local and global variables
+#==============================================================================================
   vars_files:
      - ./global-vars/apic-details.yaml
 
   tasks:
     - name:
       set_fact:
-        #desired_state:      present
-        #desired_state:      absent
-        desired_status:      modified,created
-        #desired_status:     deleted
+        desired_state:
+          status:            'modified,created'
+          #status:           deleted
 
+#==============================================================================================
+# APIC access information
+#==============================================================================================
     - name:                  apic details
       set_fact:
         apic_info:           &apic_info
@@ -33,19 +37,7 @@
   tags:                      always
 
 #==============================================================================================
-# Begin Plays
-#
-# Available Tags:
-#               snapshot
-#               node-oob
-#==============================================================================================
-- import_playbook:           ./snapshot.yaml
-  vars:
-    snapshotDescription:     Prior to oob Management Configuration - Created by Ansible
-  tags:                      snapshot
-
-#==============================================================================================
-# Configure fabric oob management addresses
+# Create Physical Domains
 #==============================================================================================
 - name:                      Configure oob management addresses
   hosts:                     localhost
@@ -68,7 +60,7 @@
                 tDn:         "topology/pod-{{item.pod}}/node-{{item.node}}"
                 v6Addr:      "::"
                 v6Gw:        "::"
-                status:      "{{desired_status}}"
+                status:      "{{desired_state.status}}"
       with_items:
         "{{mgmtRsOoBStNode}}"
-  tags:                      node-oob
+  #tags:

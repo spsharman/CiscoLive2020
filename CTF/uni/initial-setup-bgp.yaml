@@ -1,3 +1,4 @@
+---
 #==============================================================================================
 # Global Configuration
 #==============================================================================================
@@ -6,22 +7,17 @@
   connection:                           local
   gather_facts:                         no
 
-#==============================================================================================
-# Set local and global variables
-#==============================================================================================
   vars_files:
      - ./global-vars/apic-details.yaml
 
   tasks:
     - name:
       set_fact:
-        desired_state:
-          status:                       'modified,created'
-          #status:                      deleted
+        #desired_state:                 present
+        #desired_state:                 absent
+        desired_status:                 modified,created
+        #desired_status:                deleted
 
-#==============================================================================================
-# APIC access information
-#==============================================================================================
     - name:                             apic details
       set_fact:
         apic_info:                      &apic_info
@@ -37,9 +33,21 @@
   tags:                                 always
 
 #==============================================================================================
+# Begin Plays
+#
+# Available Tags:
+#               snapshot
+#               route-reflectors
+#==============================================================================================
+- import_playbook:                      ./snapshot.yaml
+  vars:
+    snapshotDescription:                Prior to Route Reflector Configuration - Created by Ansible
+  tags:                                 snapshot
+
+#==============================================================================================
 # Create/Delete BGP Route Reflector Addresses
 #==============================================================================================
-- name:                                 Configure BGP Route Reflector Addresses
+- name:                                 Manage Route Reflector Addresses
   hosts:                                localhost
   connection:                           local
   gather_facts:                         no
@@ -47,7 +55,7 @@
   vars_files:                           ./global-vars/bgp.yaml
 
   tasks:
-    - name:                             Create/Delete BGP Route Reflector Addresses
+    - name:                             Create/Delete BGP Route Reflectors
       aci_rest:
           <<:                           *apic_info
           <<:                           *rest_info
@@ -96,8 +104,6 @@
                       descr:            ''
                       name:             ''
                       nameAlias:        ''
-
-
 #      with_items:
 #        "{{bgpRRNodePEp}}"
-#tags:
+  tags:                                 route-reflectors
