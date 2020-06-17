@@ -69,4 +69,6 @@
                 status:    "{{ desired_status }}"
       with_items:
         "{{ interfaces_leafInterfaces_profiles }}"
+      loop_control:
+        pause: 1
   tags:                    leaf-profiles

@@ -51,7 +51,8 @@
       aci_config_snapshot:
         <<:                *apic_info
         state:             present
-        export_policy:     config_backup
+        #export_policy:     config_backup
+        export_policy:     dCloud-Session-EP
         max_count:         10
         description:       "{{snapshotDescription}}"
   tags:                    snapshot

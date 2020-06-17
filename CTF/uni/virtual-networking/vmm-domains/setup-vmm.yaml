@@ -1,3 +1,4 @@
+---
 #==============================================================================================
 # Global Configuration
 #==============================================================================================
@@ -6,22 +7,17 @@
   connection:                            local
   gather_facts:                          no
 
-#==============================================================================================
-# Set local and global variables
-#==============================================================================================
   vars_files:
      - ../../global-vars/apic-details.yaml
 
   tasks:
     - name:
       set_fact:
-        desired_state:
-          status:                       'modified,created'
-          #status:                        'deleted'
+        #desired_state:                  present
+        #desired_state:                  absent
+        desired_status:                  modified,created
+        #desired_status:                 deleted
 
-#==============================================================================================
-# APIC access information
-#==============================================================================================
     - name:                              apic details
       set_fact:
         apic_info:                       &apic_info
@@ -35,6 +31,18 @@
           path:                          /api/mo/.json
           method:                        post
   tags:                                  always
+
+#==============================================================================================
+# Begin Plays
+#
+# Available Tags:
+#               snapshot
+#               vmm
+#==============================================================================================
+- import_playbook:                       ../../snapshot.yaml
+  vars:
+    snapshotDescription:                 Prior to configuring a VMM domain - Created by Ansible
+  tags:                                  snapshot
 
 #==============================================================================================
 # Create VMM Domain
@@ -78,14 +86,14 @@
                 ownerKey:                ''
                 ownerTag:                ''
                 prefEncapMode:           unspecified
-                status:                  "{{desired_state.status}}"
+                status:                  "{{desired_status}}"
               children:
                 - vmmVSwitchPolicyCont:
                     attributes:
                       annotation:        ''
                       descr:             ''
                       nameAlias:         ''
-                      status:            "{{desired_state.status}}"
+                      status:            "{{desired_status}}"
                     children:
                       - vmmRsVswitchOverrideLldpIfPol:
                           attributes:
@@ -109,37 +117,37 @@
                       ownerTag:          ''
                       usr:               administrator@vsphere.local
                       pwd:               C1sco12345!
-                      status:            "{{desired_state.status}}"
+                      status:            "{{desired_status}}"
                 - vmmRsDefaultStpIfPol:
                     attributes:
                       annotation:        ''
                       tnStpIfPolName:    ''
-                      status:            "{{desired_state.status}}"
+                      status:            "{{desired_status}}"
                 - vmmRsDefaultLacpLagPol:
                     attributes:
                       annotation:        ''
                       tnLacpLagPolName:  ''
-                      status:            "{{desired_state.status}}"
+                      status:            "{{desired_status}}"
                 - vmmRsDefaultL2InstPol:
                     attributes:
                       annotation:        ''
                       tnL2InstPolName:   ''
-                      status:            "{{desired_state.status}}"
+                      status:            "{{desired_status}}"
                 - vmmRsDefaultFwPol:
                     attributes:
                       annotation:        ''
                       tnNwsFwPolName:    ''
-                      status:            "{{desired_state.status}}"
+                      status:            "{{desired_status}}"
                 - vmmRsDefaultCdpIfPol:
                     attributes:
                       annotation:        ''
                       tnCdpIfPolName:    ''
-                      status:            "{{desired_state.status}}"
+                      status:            "{{desired_status}}"
                 - vmmRsDefaultLldpIfPol:
                     attributes:
                       annotation:        ''
                       tnLldpIfPolName:   ''
-                      status:            "{{desired_state.status}}"
+                      status:            "{{desired_status}}"
                 - vmmCtrlrP:
                     attributes:
                       annotation:        ''
@@ -158,7 +166,7 @@
                       seqNum:            '0'
                       statsMode:         disabled
                       vxlanDeplPref:     vxlan
-                      status:            "{{desired_state.status}}"
+                      status:            "{{desired_status}}"
                     children:
                       - vmmRsAcc:
                           attributes:
@@ -168,7 +176,9 @@
                     attributes:
                       annotation:        ''
                       tDn:               uni/infra/vlanns-[{{ item.poolName }}]-dynamic
-                      status:            "{{desired_state.status}}"
+                      status:            "{{desired_status}}"
       with_items:
         "{{ pools_vlan }}"
-#tags:
+      loop_control:
+        pause: 1
+  tags:                                  vmm

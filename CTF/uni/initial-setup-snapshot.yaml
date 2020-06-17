@@ -52,4 +52,4 @@
         export_policy:     config_backup
         max_count:         10
         description:       "{{snapshotDescription}}"
-  tags:                    snapshot
+  tags:                    always

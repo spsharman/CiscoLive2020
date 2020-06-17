@@ -1,7 +1,7 @@
 ---
 - import_playbook: ./fabric/access-policies/master.yaml
-- import_playbook: ./fabric/access-policies/modify-switch-interfaces.yaml
 - import_playbook: ./virtual-networking/vmm-domains/setup-vmm.yaml
 - import_playbook: ./tenants/common/master.yaml
 - import_playbook: ./tenants/vmware/master.yaml
 - import_playbook: ./tenants/ctf/master.yaml
+- import_playbook: ./post-run-me-snapshot.yaml

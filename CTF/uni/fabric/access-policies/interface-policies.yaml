@@ -70,7 +70,8 @@
                   status:   "{{ desired_status }}"
         with_items:
           "{{ policies_interface_cdpInterface }}"
-
+        loop_control:
+          pause: 1
 
       - name:               Create/Delete LACP Policy
         aci_rest:
@@ -86,5 +87,6 @@
                   status:   "{{ desired_status }}"
         with_items:
           "{{ policies_interface_portChannel }}"
-
+        loop_control:
+          pause: 1
   tags:                     interface-policies

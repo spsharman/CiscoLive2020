@@ -8,16 +8,9 @@
   gather_facts:           no
 
   vars_files:
-     - ../../../global-vars/apic-details.yaml
+     - ./global-vars/apic-details.yaml
 
   tasks:
-    - name:
-      set_fact:
-        desired_state:    present
-        #desired_state:   absent
-        #desired_status:  modified,created
-        #desired_status:  deleted
-
     - name:               apic details
       set_fact:
         apic_info:        &apic_info
@@ -37,36 +30,26 @@
 #
 # Available Tags:
 #               snapshot
-#               vrfs
 #==============================================================================================
-- import_playbook:        ../../../snapshot.yaml
+
+#==============================================================================================
+# Take a configuration snapshot
+#==============================================================================================
+- name:                    Create an APIC Snapshot
+  hosts:                   localhost
+  connection:              local
+  gather_facts:            no
+
   vars:
-    snapshotDescription:  Prior to adding Common Tenant VRFs - Created by Ansible
-  tags:                   snapshot
-
-#==============================================================================================
-# Create VRFs
-#==============================================================================================
-- name:                            Configure VRF
-  hosts:                           localhost
-  connection:                      local
-  gather_facts:                    no
-
-  vars_files:
-     - ./vars/vrf-vars.yaml
+    snapshotDescription:  Post Initial Build Snapshot - Created by Ansible
+#
 
   tasks:
-    - name:                        Create/Delete VRF
-      aci_vrf:
-        <<:                        *apic_info
-        tenant:                    "{{ item.tenant }}"
-        vrf:                       "{{ item.vrf }}"
-        description:               "{{ item.descr }}"
-        policy_control_preference: enforced
-        state:                     "{{ desired_state }}"
-      with_items:
-        - "{{ vrf }}"
-      loop_control:
-        pause: 1
-  tags:
-    - vrf
+    - name:                Create an APIC Snapshot
+      aci_config_snapshot:
+        <<:                *apic_info
+        state:             present
+        export_policy:     config_backup
+        max_count:         10
+        description:       "{{snapshotDescription}}"
+  tags:                    always

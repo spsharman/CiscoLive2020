@@ -1,55 +1,52 @@
 ---
 #==============================================================================================
-# Available tags:
-#
-# filters
-# contract
-# subject
-# aci_contract_subject_to_filter
-# bind-contract
-#
-#==============================================================================================
-
-- import_playbook:                    ../../../snapshot.yaml
-  tags:                               snapshot
-
-#==============================================================================================
 # Global Configuration
 #==============================================================================================
-- name:                               Define global settings
-  hosts:                              localhost
-  connection:                         local
-  gather_facts:                       no
+- name:                   Define global settings
+  hosts:                  localhost
+  connection:             local
+  gather_facts:           no
 
-#==============================================================================================
-# Set local and global variables
-#==============================================================================================
   vars_files:
      - ../../../global-vars/apic-details.yaml
 
   tasks:
     - name:
       set_fact:
-        desired_state:
-          status:                     present
-          #status:                    deleted
+        desired_state:    present
+        #desired_state:   absent
+        #desired_status:  modified,created
+        #desired_status:  deleted
 
-#==============================================================================================
-# APIC access information
-#==============================================================================================
-    - name:                           apic details
+    - name:               apic details
       set_fact:
-        apic_info:                    &apic_info
-          host:                       "{{ apic_info.host }}"
-          username:                   "{{ apic_info.username }}"
-          password:                   "{{ apic_info.password }}"
-          validate_certs:             no
+        apic_info:        &apic_info
+          host:           "{{ apic_info.host }}"
+          username:       "{{ apic_info.username }}"
+          password:       "{{ apic_info.password }}"
+          validate_certs: no
 
-        rest_info:                    &rest_info
-          use_proxy:                  no
-          path:                       /api/mo/.json
-          method:                     post
-  tags:                               always
+        rest_info:        &rest_info
+          use_proxy:      no
+          path:           /api/mo/.json
+          method:         post
+  tags:                   always
+
+#==============================================================================================
+# Begin Plays
+#
+# Available Tags:
+#               snapshot
+#               filters
+#               contract
+#               subject
+#               aci_contract_subject_to_filter
+#               bind-contract
+#==============================================================================================
+- import_playbook:        ../../../snapshot.yaml
+  vars:
+    snapshotDescription:  Prior to configuring Contracts in the ctf tenant - Created by Ansible
+  tags:                   snapshot
 
 #==============================================================================================
 # Create the filters
@@ -68,9 +65,11 @@
         <<:                           *apic_info
         tenant:                       "common"
         filter:                       "{{ item.subject }}_src_port_{{ item.src_port }}_to_dst_port_{{ item.dst_port }}"
-        state:                        "{{ desired_state.status }}"
+        state:                        "{{ desired_state }}"
       with_items:
         "{{ contract }}"
+      loop_control:
+        pause: 1
 
 # Create a new filter entry
     - name:                           Create Filter Entry
@@ -82,9 +81,11 @@
         ether_type:                   "ip"
         ip_protocol:                  "{{ item. subject }}"
         dst_port:                     "{{ item.dst_port }}"
-        state:                        "{{ desired_state.status }}"
+        state:                        "{{ desired_state }}"
       with_items:
         "{{ contract }}"
+      loop_control:
+        pause: 1
   tags:                               filters
 
 #==============================================================================================
@@ -107,9 +108,11 @@
         contract:                     "{{ item.cons_tn_name }}_{{ item.cons_ap_name }}_{{ item.cons_epg_name }}_to_{{ item.prov_tn_name }}_{{ item.prov_ap_name }}_{{ item.prov_epg_name }}"
         description:                  "{{ item.description }}"
         scope:                        "{{ item.scope }}"
-        state:                        "{{ desired_state.status }}"
+        state:                        "{{ desired_state }}"
       with_items:
         "{{ contract }}"
+      loop_control:
+        pause: 1
       tags:                           contract
 
     - name:                           Add a new contract subject
@@ -122,9 +125,11 @@
         reverse_filter:               yes
 #        priority:                    ""
 #        dscp:                        ""
-        state:                        "{{ desired_state.status }}"
+        state:                        "{{ desired_state }}"
       with_items:
         "{{ contract }}"
+      loop_control:
+        pause: 1
       tags:                           subject
 
     - name:                           Add a new contract subject to filter binding
@@ -135,9 +140,11 @@
         subject:                      "{{ item.subject }}"
         filter:                       "{{ item.subject }}_src_port_{{ item.src_port }}_to_dst_port_{{ item.dst_port }}"
   #      log:                         none
-        state:                        "{{ desired_state.status }}"
+        state:                        "{{ desired_state }}"
       with_items:
         "{{ contract }}"
+      loop_control:
+        pause: 1
       tags:                           subject-to-filter
 
 #==============================================================================================
@@ -161,9 +168,11 @@
         epg:                          "{{ item.cons_epg_name }}"
         contract:                     "{{ item.cons_tn_name }}_{{ item.cons_ap_name }}_{{ item.cons_epg_name }}_to_{{ item.prov_tn_name }}_{{ item.prov_ap_name }}_{{ item.prov_epg_name }}"
         contract_type:                consumer
-        state:                        "{{ desired_state.status }}"
+        state:                        "{{ desired_state }}"
       with_items:
         "{{ contract }}"
+      loop_control:
+        pause: 1
 
     - name:                           Bind Contract to Source EPG
       aci_epg_to_contract:
@@ -173,7 +182,9 @@
         epg:                          "{{ item.prov_epg_name }}"
         contract:                     "{{ item.cons_tn_name }}_{{ item.cons_ap_name }}_{{ item.cons_epg_name }}_to_{{ item.prov_tn_name }}_{{ item.prov_ap_name }}_{{ item.prov_epg_name }}"
         contract_type:                provider
-        state:                        "{{ desired_state.status }}"
+        state:                        "{{ desired_state }}"
       with_items:
         "{{ contract }}"
+      loop_control:
+        pause: 1
   tags:                               bind-contract

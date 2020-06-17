@@ -80,6 +80,8 @@
                     status:             "{{ desired_status }}"
       with_items:
         "{{ interfaces_leafInterfaces_policyGroups_leafAccessPort }}"
+      loop_control:
+        pause: 1
       tags:                             access-interface-policy-groups
 
 
@@ -107,5 +109,6 @@
                       tDn:              "uni/infra/attentp-{{ item.aaepName }}"
       with_items:
         "{{ interfaces_leafInterfaces_policyGroups_vpcInterface }}"
-
+      loop_control:
+        pause: 1
       tags:                             vpc-interface-policy-group

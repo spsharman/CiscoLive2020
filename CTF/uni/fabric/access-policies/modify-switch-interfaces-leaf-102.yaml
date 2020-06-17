@@ -89,5 +89,6 @@
                     status:          "{{ item.status }}"
       with_items:
         - "{{ interfaces.interfaces_leafInterfaces_profiles_102_ports }}"
-
+      loop_control:
+        pause: 1
   tags:                              leaf-102

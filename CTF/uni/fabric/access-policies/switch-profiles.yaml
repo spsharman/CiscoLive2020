@@ -86,7 +86,9 @@
                         to_:                  "{{ item.toLeafId }}"
       with_items:
         "{{ switches_leafSwitches_profiles }}"
-
+      loop_control:
+        pause: 1
+        
     - name:                                   Create/Delete vPC Pairs
       aci_rest:
           <<:                                 *apic_info
@@ -119,4 +121,6 @@
 
       with_items:
         "{{ policies_switch_virtualPortChannelDefault }}"
+      loop_control:
+        pause: 1
   tags:                                       switch-profiles

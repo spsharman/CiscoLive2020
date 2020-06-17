@@ -85,6 +85,8 @@
                     status:       "{{ desired_status }}"
       with_items:
         "{{ policies_global_aaep_phys }}"
+      loop_control:
+        pause: 1
   tags:                           physical-domain
 
 #==============================================================================================
@@ -127,4 +129,6 @@
                     status:       "{{ desired_status }}"
       with_items:
         "{{ policies_global_aaep_l2 }}"
+      loop_control:
+        pause: 1
   tags:                           L2-domain

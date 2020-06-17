@@ -76,4 +76,6 @@
                     to:        "vlan-{{ item.end_vlanid }}"
       with_items:
         "{{ pools_vlan }}"
+      loop_control:
+        pause: 1        
   tags:                        pools

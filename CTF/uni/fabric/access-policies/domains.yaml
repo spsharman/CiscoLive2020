@@ -102,4 +102,6 @@
                     tDn:      "uni/infra/vlanns-[{{ item.poolName }}]-[{{ item.poolType }}]"
       with_items:
         "{{ physical_and_external_domains_external_bridged_domains }}"
+      loop_control:
+        pause: 1
   tags:                       L2-domains
