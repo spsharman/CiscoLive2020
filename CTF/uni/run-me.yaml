@@ -1,4 +1,5 @@
 ---
+- import_playbook: ./pre-run-me-snapshot.yaml
 - import_playbook: ./fabric/access-policies/master.yaml
 - import_playbook: ./virtual-networking/vmm-domains/setup-vmm.yaml
 - import_playbook: ./tenants/common/master.yaml
