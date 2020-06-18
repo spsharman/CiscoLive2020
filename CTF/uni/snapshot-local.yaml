@@ -40,8 +40,10 @@
   connection:              local
   gather_facts:            no
 
-  vars:
-    snapshotDescription:  Post Run-Me Snapshot - Created by Ansible
+# uncomment the following lines for test purposes
+#
+#  vars:
+#    snapshotDescription:  Snapshot Created by Ansible
 #
 
   tasks:
@@ -52,4 +54,4 @@
         export_policy:     config_backup
         max_count:         10
         description:       "{{snapshotDescription}}"
-  tags:                    always
+  tags:                    snapshot

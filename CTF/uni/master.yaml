@@ -1,5 +1,5 @@
 ---
-- import_playbook: initial-setup-snapshot.yaml
+- import_playbook: pre-initial-setup-snapshot.yaml
 - import_playbook: ./fabric/inventory/add-switches.yaml
 - import_playbook: initial-setup-remove-default-objects.yaml
 - import_playbook: initial-setup-fault-timers.yaml

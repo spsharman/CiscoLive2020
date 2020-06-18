@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:        ../../snapshot.yaml
   vars:
-    snapshotDescription:  Prior to adding VLAN Pools - Created by Ansible
+    snapshotDescription:  Prior-to-configuring-VLAN-Pools
   tags:                   snapshot
 
 #==============================================================================================
@@ -77,5 +77,5 @@
       with_items:
         "{{ pools_vlan }}"
       loop_control:
-        pause: 1        
+        pause: 1
   tags:                        pools

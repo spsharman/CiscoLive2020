@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:        ../../snapshot.yaml
   vars:
-    snapshotDescription:  Prior to configuring the Interface Policies - Created by Ansible
+    snapshotDescription:  Prior-to-configuring-Interface-Policies
   tags:                   snapshot
 
 #==============================================================================================

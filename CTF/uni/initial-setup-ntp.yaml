@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:           ./snapshot.yaml
   vars:
-    snapshotDescription:     Prior to NTP Configuration - Created by Ansible
+    snapshotDescription:     Prior-to-NTP-Configuration
   tags:                      snapshot
 
 #==============================================================================================

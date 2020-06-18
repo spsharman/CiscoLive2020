@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:                       ../../snapshot.yaml
   vars:
-    snapshotDescription:                 Prior to configuring a VMM domain - Created by Ansible
+    snapshotDescription:                 Prior-to-configuring-a-VMM-domain
   tags:                                  snapshot
 
 #==============================================================================================

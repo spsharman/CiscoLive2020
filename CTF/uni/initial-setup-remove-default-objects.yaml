@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:           ./snapshot.yaml
   vars:
-    snapshotDescription:     Prior to removing default phys Domain - Created by Ansible
+    snapshotDescription:     Prior-to-removing-default-objects
   tags:                      snapshot
 
 #==============================================================================================

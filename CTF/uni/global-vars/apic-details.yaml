@@ -7,12 +7,6 @@
       password:       C1sco12345
       validate_certs: no
 
-#    apic_info:        &apic_info
-#      host:           10.237.97.182
-#      username:       admin
-#      password:       C!5co123
-#      validate_certs: no
-
     rest_info:        &rest_info
       use_proxy:      no
       path:           /api/mo/.json

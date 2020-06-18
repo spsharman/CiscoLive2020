@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:               ./snapshot.yaml
   vars:
-    snapshotDescription:         Prior to DNS Configuration - Created by Ansible
+    snapshotDescription:         Prior-to-DNS-Configuration
   tags:                          snapshot
 
 #==============================================================================================

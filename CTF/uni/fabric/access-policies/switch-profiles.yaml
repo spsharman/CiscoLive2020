@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:        ../../snapshot.yaml
   vars:
-    snapshotDescription:  Prior to adding the Switch Profiles - Created by Ansible
+    snapshotDescription:  Prior-to-configuring-Switch-Profiles
   tags:                   snapshot
 
 #==============================================================================================
@@ -88,7 +88,7 @@
         "{{ switches_leafSwitches_profiles }}"
       loop_control:
         pause: 1
-        
+
     - name:                                   Create/Delete vPC Pairs
       aci_rest:
           <<:                                 *apic_info

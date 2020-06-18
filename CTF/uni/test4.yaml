@@ -1,2 +1,0 @@
----
-- import_playbook: initial-setup-snapshot.yaml --skip-tags=snapshot

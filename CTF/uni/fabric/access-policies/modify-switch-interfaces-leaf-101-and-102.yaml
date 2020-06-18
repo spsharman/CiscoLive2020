@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:                   ../../snapshot.yaml
   vars:
-    snapshotDescription:             Prior to configuring Leaf 101 and 102 interfaces - Created by Ansible
+    snapshotDescription:             Prior-to-configuring-Leaf-101-and-102-interfaces
   tags:                              snapshot
 
 #==============================================================================================

@@ -42,7 +42,7 @@
 #==============================================================================================
 - import_playbook:        ../../../snapshot.yaml
   vars:
-    snapshotDescription:  Prior to adding Common Tenant Bridge Domains and Gateways - Created by Ansible
+    snapshotDescription:  Prior-to-configuring-Common-Tenant-Bridge-Domains-and-Gateways
   tags:                   snapshot
 
 #==============================================================================================

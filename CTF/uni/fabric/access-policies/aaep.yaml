@@ -42,7 +42,7 @@
 #==============================================================================================
 - import_playbook:        ../../snapshot.yaml
   vars:
-    snapshotDescription:  Prior to configuring the AAEPs - Created by Ansible
+    snapshotDescription:  Prior-to-configuring-the-AAEPs
   tags:                   snapshot
 
 #==============================================================================================

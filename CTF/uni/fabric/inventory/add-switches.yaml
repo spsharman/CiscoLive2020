@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:        ../../snapshot.yaml
   vars:
-    snapshotDescription:  Prior to adding switches to the fabric - Created by Ansible
+    snapshotDescription:  Prior-to-adding-switches
   tags:                   snapshot
 
 #==============================================================================================

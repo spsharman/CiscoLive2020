@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:        ../../../snapshot.yaml
   vars:
-    snapshotDescription:  Prior to adding Common Tenant Filters - Created by Ansible
+    snapshotDescription:  Prior-to-configuring-Common-Tenant-Filters
   tags:                   snapshot
 
 #==============================================================================================

@@ -41,7 +41,7 @@
 #==============================================================================================
 - import_playbook:         ../../snapshot.yaml
   vars:
-    snapshotDescription:   Prior to adding the Leaf Profiles - Created by Ansible
+    snapshotDescription:   Prior-to-configuring-Leaf-Profiles
   tags:                    snapshot
 
 #==============================================================================================

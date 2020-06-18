@@ -45,7 +45,7 @@
 #==============================================================================================
 - import_playbook:        ../../../snapshot.yaml
   vars:
-    snapshotDescription:  Prior to configuring Contracts in the ctf tenant - Created by Ansible
+    snapshotDescription:  Prior-to-configuring-Contracts-in-the-ctf-tenant
   tags:                   snapshot
 
 #==============================================================================================

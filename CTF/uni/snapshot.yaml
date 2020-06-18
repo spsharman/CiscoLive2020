@@ -35,10 +35,10 @@
 #==============================================================================================
 # Take a configuration snapshot
 #==============================================================================================
-- name:                    Create an APIC Snapshot
-  hosts:                   localhost
-  connection:              local
-  gather_facts:            no
+- name:                                     Take snapshot to file server
+  hosts:                                    localhost
+  connection:                               local
+  gather_facts:                             no
 
 # uncomment the following lines for test purposes
 #
@@ -47,11 +47,25 @@
 #
 
   tasks:
-    - name:                Create an APIC Snapshot
-      aci_config_snapshot:
-        <<:                *apic_info
-        state:             present
-        export_policy:     config_backup
-        max_count:         10
-        description:       "{{snapshotDescription}}"
-  tags:                    snapshot
+    - name:
+      aci_rest:
+          <<:                               *apic_info
+          <<:                               *rest_info
+          content:
+            configExportP:
+              attributes:
+                dn:                         uni/fabric/configexp-"{{snapshotDescription}}"
+                name:                       "{{snapshotDescription}}"
+#                dn:                         uni/fabric/configexp-config-backup
+#                name:                       config-backup
+                snapshot:                   'false'
+                targetDn:                   ''
+                adminSt:                    triggered
+                rn:                         configexp-defaultOneTime
+                status:                     'created,modified'
+                descr:                      '{{snapshotDescription}}'
+              children:
+                - configRsRemotePath:
+                    attributes:
+                      tnFileRemotePathName: dCloud-AD1-Session-RL
+                      status:               'created,modified'

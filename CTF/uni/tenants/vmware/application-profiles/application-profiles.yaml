@@ -44,7 +44,7 @@
 #==============================================================================================
 - import_playbook:        ../../../snapshot.yaml
   vars:
-    snapshotDescription:  Prior to configuring APs in the ctf tenant - Created by Ansible
+    snapshotDescription:  Prior-to-configuring-APs-in-the-vmware-tenant
   tags:                   snapshot
 
 #==============================================================================================

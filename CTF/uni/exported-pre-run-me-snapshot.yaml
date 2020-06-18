@@ -50,8 +50,8 @@
           content:
             configExportP:
               attributes:
-                dn:                         uni/fabric/configexp-Post-Run-Me-Snapshot
-                name:                       Post-Run-Me-Snapshot
+                dn:                         uni/fabric/configexp-Exported-Pre-Run-Me-Snapshot
+                name:                       Exported-Pre-Run-Me-Snapshot
                 snapshot:                   'false'
                 targetDn:                   ''
                 adminSt:                    triggered
