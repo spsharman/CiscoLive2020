@@ -7,5 +7,4 @@
 - import_playbook: initial-setup-dns.yaml
 - import_playbook: initial-setup-ntp.yaml
 - import_playbook: initial-setup-node-mgmt.yaml
-- import_playbook: initial-setup-tenants.yaml
 - import_playbook: post-initial-setup-snapshot.yaml

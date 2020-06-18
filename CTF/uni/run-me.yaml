@@ -2,6 +2,7 @@
 - import_playbook: ./pre-run-me-snapshot.yaml
 - import_playbook: ./fabric/access-policies/master.yaml
 - import_playbook: ./virtual-networking/vmm-domains/setup-vmm.yaml
+- import_playbook: initial-setup-tenants.yaml
 - import_playbook: ./tenants/common/master.yaml
 - import_playbook: ./tenants/vmware/master.yaml
 - import_playbook: ./tenants/ctf/master.yaml
