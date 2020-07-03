@@ -1,5 +1,16 @@
 ---
 - import_playbook: ./application-profiles/application-profiles-linux.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: ./application-profiles/application-profiles-windows.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: ./application-profiles/application-profiles-wordPress.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: ./contracts/add-contracts.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml

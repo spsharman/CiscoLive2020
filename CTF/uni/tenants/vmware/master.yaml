@@ -1,2 +1,4 @@
 ---
 - import_playbook: ./application-profiles/application-profiles.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml

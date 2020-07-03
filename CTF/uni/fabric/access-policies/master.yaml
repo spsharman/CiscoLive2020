@@ -1,11 +1,40 @@
 ---
 - import_playbook: leaf-profiles.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: switch-profiles.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: pools.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: domains.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: aaep.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: interface-policies.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: interface-policy-groups.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 #- import_playbook: modify-switch-interfaces-leaf-101.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 #- import_playbook: modify-switch-interfaces-leaf-102.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: modify-switch-interfaces-leaf-101-and-102.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml

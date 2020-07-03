@@ -1,0 +1,8 @@
+#==============================================================================================
+# vCenter access information.
+#==============================================================================================
+vcenter_info:
+  hostname:       "hx-prod-vc01.uktme.cisco.com"
+  username:       "administrator@vsphere.local"
+  password:       "C!5co123"
+  validate_certs: no

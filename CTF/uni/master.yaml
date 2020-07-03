@@ -1,10 +1,37 @@
 ---
+#==============================================================================================
+# Wait between importing playbooks
+#==============================================================================================
 - import_playbook: pre-initial-setup-snapshot.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: ./fabric/inventory/add-switches.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: initial-setup-remove-default-objects.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: initial-setup-fault-timers.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: initial-setup-bgp.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: initial-setup-dns.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: initial-setup-ntp.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: initial-setup-node-mgmt.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: post-initial-setup-snapshot.yaml

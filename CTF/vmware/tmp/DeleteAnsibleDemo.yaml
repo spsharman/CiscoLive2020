@@ -1,0 +1,58 @@
+- name: Delete config from AnsibleDemo
+  hosts: 10.61.124.32
+  connection: local
+  gather_facts: no
+  vars:
+    host: 10.61.124.32
+    username: admin
+    password: C!sco12345
+    vmm_host: vcenter-amslab.cisco.com
+    vmm_username: administrator@vsphere.local
+    vmm_password: "C!sco12345"
+
+  vars_prompt:
+    - name: "tenant"
+      prompt: "Tenant name?"
+      default: "AnsibleDemo"
+      private: no
+    - name: "vm1"
+      prompt: "VM1 name?"
+      default: "AnsibleFrontend"
+      private: no
+    - name: "vm2"
+      prompt: "VM2 name?"
+      default: "AnsibleBackend"
+      private: no
+
+
+  tasks:
+
+    - name: Change portgroup for VM
+      vmware_guest:
+        hostname: "{{ vmm_host }}"
+        username: "{{ vmm_username }}"
+        password: "{{ vmm_password }}"
+        validate_certs: False
+        datacenter: Amsterdam
+        esxi_hostname: 10.61.125.65
+        name: "{{ item.name }}"
+        networks:
+        - name: "{{ item.net }}"
+          start_connected: True
+        state: present
+      with_items:
+        - { name: "{{ vm1 }}", net: "abrantsm|TestApp|frontend" }
+        - { name: "{{ vm2 }}", net: "abrantsm|TestApp|backend" }
+      delegate_to: localhost
+
+    - pause:
+        seconds: 1
+
+    - name: Delete Demo Tenant
+      aci_tenant:
+        hostname: "{{ host }}"
+        username: "{{ username }}"
+        password: "{{ password }}"
+        validate_certs: no
+        tenant: "{{ tenant }}"
+        state: absent

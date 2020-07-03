@@ -1,4 +1,12 @@
 ---
 - import_playbook: ./networking/vrfs.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: ./networking/bridge-domains.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml
+
 - import_playbook: ./contracts/filter-builder.yaml
+# wait for 5 seconds
+- import_playbook: ../../wait5.yaml

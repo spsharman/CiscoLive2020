@@ -1,0 +1,54 @@
+---
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                      Define global settings
+  hosts:                     localhost
+  connection:                local
+  gather_facts:              no
+
+  vars_files:
+     - ../global-vars/vcenter-details.yaml
+
+  tasks:
+    - name:                  Set object status
+      set_fact:
+        #desired_state:      present
+        #desired_state:      absent
+
+    - name:                  vCenter details
+      set_fact:
+        vcenter_info:        &vcenter_login
+          hostname:          "{{ vcenter_info.hostname }}"
+          username:          "{{ vcenter_info.username }}"
+          password:          "{{ vcenter_info.password }}"
+          validate_certs:    no
+  tags:                      always
+
+#==============================================================================================
+# Begin Plays
+#
+# Available Tags:
+#
+#==============================================================================================
+- name:                      Modify VMs
+  hosts:                     localhost
+  connection:                local
+  gather_facts:              no
+
+  vars_files:
+     - ./vars/vm-details.yaml
+
+  tasks:
+    - name:                  Change network backing
+      vmware_guest:
+        <<:                  *vcenter_login
+        datacenter:          "{{ item.datacenter }}"
+        cluster:             "{{ item.cluster }}"
+        name:                "{{ item.name }}"
+        networks:
+          - label:           "{{ item.adapter }}"
+            name:            "{{ item.network }}"
+            connected:       "{{ item.connected}}"
+            start_connected: True
+      loop:                  "{{ vm_names }}"

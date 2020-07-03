@@ -41,7 +41,7 @@
   gather_facts:            no
 
   vars:
-    snapshotDescription:  Post Run-Me Snapshot - Created by Ansible
+    snapshotDescription:  Snapshot Post Run-Me Playbook
 #
 
   tasks:

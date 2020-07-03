@@ -1,0 +1,10 @@
+#==============================================================================================
+# virtual machine information.
+#==============================================================================================
+vm_names:
+  - name:       "ansible-network-test"
+    datacenter: "UKTME"
+    cluster:    "hx-prod"
+    adapter:    "Network adapter 1"
+    connected:  "true"
+    network:    "10.237.99.192_27_ssharman-01"

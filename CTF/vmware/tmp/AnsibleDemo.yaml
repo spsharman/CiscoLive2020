@@ -1,0 +1,173 @@
+- name: Create Test Demo 2 EPGs
+  hosts: 10.61.124.32
+  connection: local
+  gather_facts: no
+  vars:
+    # Create block resuable code for login of APIC and vCenter
+    aci_login: &aci_login
+      hostname: 10.61.124.32
+      username: admin
+      password: C!sco12345
+      validate_certs: no
+      tenant: "{{ tenant }}"
+    vcenter_login: &vcenter_login
+      hostname: vcenter-amslab.cisco.com
+      username: administrator@vsphere.local
+      password: "C!sco12345"
+      validate_certs: False
+    # Contract variables hardcoded
+    filter: icmp_filter
+    contract: TestApp-contract
+    subject: icmp-subject
+
+
+  # Ask for variable inputs
+  vars_prompt:
+    - name: "tenant"
+      prompt: "Tenant name?"
+      default: "AnsibleDemo"
+      private: no
+    - name: "vrf"
+      prompt: "VRF name?"
+      default: "vrf-test"
+      private: no
+    - name: "bd"
+      prompt: "Bridge Domain name?"
+      default: "bd-test"
+      private: no
+    - name: "ap"
+      prompt: "Application Profile name?"
+      default: "TestApp"
+      private: no
+    - name: "epg_name1"
+      prompt: "EPG1 name?"
+      default: "frontend"
+      private: no
+    - name: "epg_name2"
+      prompt: "EPG2 name?"
+      default: "backend"
+      private: no
+    - name: "vmm_domain"
+      prompt: "VMM domain name?"
+      default: "HX-ACI"
+      private: no
+    - name: "vm1"
+      prompt: "VM1 name?"
+      default: "AnsibleFrontend"
+      private: no
+    - name: "vm2"
+      prompt: "VM2 name?"
+      default: "AnsibleBackend"
+      private: no
+
+  tasks:
+
+    - name: Create Tenant
+      aci_tenant:
+        <<: *aci_login
+
+    - name: Create VRF
+      aci_vrf:
+        <<: *aci_login
+        vrf: "{{ vrf }}"
+        policy_control_preference: enforced
+
+    - name: Create BD
+      aci_bd:
+        <<: *aci_login
+        bd: "{{ bd }}"
+        vrf: "{{ vrf }}"
+
+    - name: Create a subnet
+      aci_bd_subnet:
+        <<: *aci_login
+        bd: "{{ bd }}"
+        gateway: 10.0.2.1
+        mask: 24
+
+    - name: Create AP
+      aci_ap:
+        <<: *aci_login
+        ap: "{{ ap }}"
+
+    - name: Create EPGs
+      aci_epg:
+        <<: *aci_login
+        ap: "{{ ap }}"
+        bd: "{{ bd }}"
+        epg: "{{ item }}"
+        intra_epg_isolation: unenforced
+      with_items:
+        - "{{ epg_name1 }}"
+        - "{{ epg_name2 }}"
+
+    - name: Bind EPG to VMM Domain
+      aci_epg_to_domain:
+        <<: *aci_login
+        ap: "{{ ap }}"
+        epg: "{{ item }}"
+        domain: "{{ vmm_domain }}"
+        domain_type: vmm
+        vm_provider: vmware
+        state: present
+      with_items:
+        - "{{ epg_name1 }}"
+        - "{{ epg_name2 }}"
+
+    - name: Create Filters
+      aci_filter:
+        <<: *aci_login
+        filter: "{{ filter }}"
+
+    - name: Create Filter Entries
+      aci_filter_entry:
+        <<: *aci_login
+        ether_type: ip
+        ip_protocol: icmp
+        entry: TestApp-ICMP-Filter
+        filter: "{{ filter }}"
+
+    - name: Create Contracts
+      aci_contract:
+        <<: *aci_login
+        contract: "{{ contract }}"
+
+    - name: Create Contract Subjects
+      aci_contract_subject:
+        <<: *aci_login
+        contract: "{{ contract }}"
+        subject: "{{ subject }}"
+        reverse_filter: yes
+
+    - name: Create Subject Filter Binding
+      aci_contract_subject_to_filter:
+        <<: *aci_login
+        contract: "{{ contract }}"
+        subject: "{{ subject }}"
+        filter: "{{ filter }}"
+
+    - name: Bind EPGs to Contracts
+      aci_epg_to_contract:
+        <<: *aci_login
+        ap: "{{ ap }}"
+        contract: "{{ item.contract }}"
+        contract_type: "{{ item.type }}"
+        epg: "{{ item.epg }}"
+      with_items:
+        - { contract: "{{ contract }}", type: consumer, epg: "{{ epg_name1 }}"}
+        - { contract: "{{ contract }}", type: provider, epg: "{{ epg_name2 }}"}
+
+    - name: Bind VM to Portgroup
+      vmware_guest:
+        <<: *vcenter_login
+        datacenter: Amsterdam
+        esxi_hostname: 10.61.125.65
+        name: "{{ item.name }}"
+        networks:
+        - name: "{{ item.net }}"
+          start_connected: True
+        state: present
+      with_items:
+        - { name: "{{ vm1 }}", net: "{{ tenant }}|{{ ap }}|{{ epg_name1 }}" }
+        - { name: "{{ vm2 }}", net: "{{ tenant }}|{{ ap }}|{{ epg_name2 }}" }
+      delegate_to: localhost

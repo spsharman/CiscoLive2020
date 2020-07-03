@@ -1,0 +1,11 @@
+---
+# wait for 5 seconds
+- name:                   Define global settings
+  hosts:                  localhost
+  connection:             local
+  gather_facts:           no
+  tasks:
+     -  name: Sleep for 5 seconds and timeout
+        wait_for:
+          delay: 5
+          timeout: 0

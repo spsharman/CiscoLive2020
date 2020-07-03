@@ -41,7 +41,7 @@
   gather_facts:            no
 
   vars:
-    snapshotDescription:  Post Initial Build Snapshot - Created by Ansible
+    snapshotDescription:  Snapshot Post Initial Master Playbook
 #
 
   tasks:

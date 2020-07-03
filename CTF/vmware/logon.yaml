@@ -1,0 +1,21 @@
+---
+#==============================================================================================
+# Global Configuration
+#==============================================================================================
+- name:                   Define global settings
+  hosts:                  localhost
+  connection:             local
+  gather_facts:           no
+
+  vars_files:
+     - ./global-vars/vcenter-details.yaml
+
+  tasks:
+    - name:               vCenter details
+      set_fact:
+        vcenter_info:     &vcenter_info
+          hostname:       "{{ vcenter_info.hostname }}"
+          username:       "{{ vcenter_info.username }}"
+          password:       "{{ vcenter_info.password }}"
+          validate_certs: no
+  tags:                   always

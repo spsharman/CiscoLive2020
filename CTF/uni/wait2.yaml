@@ -1,0 +1,11 @@
+---
+# wait for 2 seconds
+- name:                   Define global settings
+  hosts:                  localhost
+  connection:             local
+  gather_facts:           no
+  tasks:
+     -  name: Sleep for 2 seconds and timeout
+        wait_for:
+          delay: 2
+          timeout: 0

@@ -1,11 +1,38 @@
 ---
 - import_playbook: ./pre-run-me-snapshot.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: ./exported-pre-run-me-snapshot.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: ./fabric/access-policies/master.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: ./virtual-networking/vmm-domains/setup-vmm.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: initial-setup-tenants.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: ./tenants/common/master.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: ./tenants/vmware/master.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: ./tenants/ctf/master.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: ./exported-post-run-me-snapshot.yaml
+# wait for 5 seconds
+- import_playbook: wait5.yaml
+
 - import_playbook: ./post-run-me-snapshot.yaml
